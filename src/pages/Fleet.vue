@@ -1,5 +1,5 @@
 <template>
-    <div>FLEE</div>
+  <div>FLEE</div>
 </template>
 
 <script>

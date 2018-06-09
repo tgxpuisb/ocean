@@ -6,8 +6,10 @@ import router from './router'
 import ElementUI from 'element-ui'
 import './assets/reset.css'
 import 'element-ui/lib/theme-chalk/index.css'
+import http from './http'
 
 Vue.config.productionTip = false
+Vue.prototype.$http = http
 
 Vue.use(ElementUI)
 

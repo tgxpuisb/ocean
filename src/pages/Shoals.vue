@@ -1,5 +1,7 @@
 <template>
-  <div id="map" class="map"></div>
+  <div class="map-container">
+    <div id="map" class="map"></div>
+  </div>
 </template>
 
 <script>
@@ -53,9 +55,8 @@ export default {
         let ships = []
         let iconStyle = new Style({
           image: new Icon({
-            color: '#8959A8',
             crossOrigin: 'anonymous',
-            src: 'https://openlayers.org/en/v4.6.5/examples/data/dot.png'
+            src: '/static/ship.png'
           })
         })
         if (Array.isArray(responseData.data)) {
@@ -91,10 +92,18 @@ export default {
     getShoals () {
       return this
         .$http
-        .post('/ship/shipList', {})
+        .post('/ship/shipList', {
+ "shipStatusList": [{
+  "mmsiNum": 412354269,"type": 1
+ }, {
+  "mmsiNum": 412420244,"type": 1
+ }],
+ "beginTime": 1528992021,"endTime": 1528992106
+})
     }
   }
 }
+//'/shipStatus/shipStatusList'
 </script>
 
 <style lang="less">

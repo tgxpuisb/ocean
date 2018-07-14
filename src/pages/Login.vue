@@ -1,4 +1,5 @@
 <template>
+<div id="login-body">
   <el-form :model="form" label-width="80px" :rules="rules" class="login-container" ref="login">
     <el-form-item label="账号:" prop="loginName">
       <el-input v-model="form.loginName" placeholder="请输入账号"></el-input>
@@ -10,6 +11,7 @@
       <el-button type="primary" @click="login('login')">登录</el-button>
     </el-form-item>
   </el-form>
+</div>
 </template>
 
 <script>
@@ -29,6 +31,9 @@ export default {
         ]
       }
     }
+  },
+  mounted () {
+    document.getElementById('login-body').style.height = document.documentElement.clientHeight + 'px'
   },
   methods: {
     login (form) {
@@ -57,11 +62,19 @@ export default {
   .login-container {
     position: absolute;
     top: 50%;
-    left: 50%;
+    left: 70%;
     transform: translate(-50%, -50%);
     width: 320px;
+    background: rgba(255, 255, 255, 0.4);
+    padding-right: 30px;
+    padding-top: 30px;
+    border-radius: 8px;
   }
   .login-button {
     text-align: center;
+  }
+  #login-body {
+    background: #2c6aa7 url('/static/pic.jpg') no-repeat center center;
+    width: 100%;
   }
 </style>

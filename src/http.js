@@ -7,8 +7,14 @@ const instance = axios.create({
 })
 
 instance.interceptors.request.use(config => {
-  console.log('经过拦截器')
-  return Promise.resolve(config)
+  // console.log('经过拦截器')
+  // return Promise.resolve(config)
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      let session = ''
+      resolve(session)
+    }, 200)
+  })
 }, error => {
   console.log('请求发生错误')
   console.log(error)
@@ -17,7 +23,7 @@ instance.interceptors.request.use(config => {
 
 instance.interceptors.response.use(response => {
   console.log('拦截到响应')
-  return Promise.resolve(response)
+  return Promise.resolve(response.data)
 }, error => {
   console.log('响应时发生错误')
   console.log(error)

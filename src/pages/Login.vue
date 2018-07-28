@@ -44,7 +44,7 @@ export default {
             .post('/login/login', this.form)
             .then(res => {
               console.log(res)
-              if (res.data.code == 0) {
+              if (res.code == 0) {
                 alert('登录成功')
                 this.$router.replace({
                   name: 'Index'

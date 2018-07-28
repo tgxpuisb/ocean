@@ -1,9 +1,37 @@
 <template>
-  <div id="map" class="map">
-    <div id="ship-popup" class="ship-info" v-show="currentShipInfo.show">
-      <p class="ship-name" v-text="currentShipInfo.name"></p>
-      <p class="ship-region" v-text="currentShipInfo.shipRegion"></p>
+  <div class="map-container">
+    <div id="map" class="map">
+      <div id="ship-popup" class="ship-info" v-show="currentShipInfo.show">
+        <p class="ship-name" v-text="currentShipInfo.name"></p>
+        <p class="ship-region" v-text="currentShipInfo.shipRegion"></p>
+      </div>
     </div>
+    <div class="position-control ol-control">
+      <button class="top" @click="moveMap('top')">↑</button>
+      <button class="bottom" @click="moveMap('bottom')">↓</button>
+      <button class="right" @click="moveMap('right')">→</button>
+      <button class="left" @click="moveMap('left')">←</button>
+    </div>
+    <el-form label-width="80px" ref="form" :model="shipSearch" class="search-form" size="mini">
+      <el-form-item label="国家地区">
+        <el-select v-model="shipSearch.nation" placeholder="请选择国家地区">
+          <el-option label="区域一" value="shanghai"></el-option>
+          <el-option label="区域二" value="beijing"></el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item label="船只类型">
+        <el-select v-model="shipSearch.type" placeholder="请选择船只类型">
+          <el-option label="区域一" value="shanghai"></el-option>
+          <el-option label="区域二" value="beijing"></el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item label="船只名称">
+        <el-select v-model="shipSearch.name" placeholder="请选择船只名称">
+          <el-option label="区域一" value="shanghai"></el-option>
+          <el-option label="区域二" value="beijing"></el-option>
+        </el-select>
+      </el-form-item>
+    </el-form>
   </div>
 </template>
 
@@ -22,6 +50,8 @@ import Feature from 'ol/feature'
 import Point from 'ol/geom/point'
 import proj from 'ol/proj'
 import Overlay from 'ol/overlay'
+import ZoomSlider from 'ol/control/zoomslider.js'
+import 'ol/ol.css'
 
 import LineString from 'ol/geom/linestring'
 // http://openlayers.org/en/latest/examples/icon-color.html
@@ -38,6 +68,12 @@ export default {
         name: '',
         show: false,
         shipRegion: ''
+      },
+      mapPos: [115, 0],
+      shipSearch: {
+        nation: '',
+        type: '',
+        name: ''
       }
 		}
 	},
@@ -46,11 +82,11 @@ export default {
     this.initPopup()
     this
       .getShoals()
-      .then(({ data: responseData }) => this.formatShoals(responseData.data))
+      .then(responseData => this.formatShoals(responseData.data))
       .then(data => {
         return this.getShipStatusList(data)
       })
-      .then(({ data: responseData }) => this.formatShipStatusList(responseData.data))
+      .then(responseData => this.formatShipStatusList(responseData.data))
       .then(this.drawShip)
       .then(() => {
         this.map.updateSize()
@@ -73,7 +109,7 @@ export default {
         ],
         target: 'map',
         view: new View({
-          center: proj.fromLonLat([115, 0]),
+          center: proj.fromLonLat(this.mapPos),
           zoom: 2.4,
           minZoom: 2.4
         })
@@ -82,9 +118,10 @@ export default {
         image: new Icon({
           crossOrigin: 'anonymous',
           src: '/static/ship.png',
-          scale: 0.6
+          scale: 0.3
         })
       })
+      this.map.addControl(new ZoomSlider())
     },
     bindEvent () {
       this.map.on('click', evt => {
@@ -120,8 +157,7 @@ export default {
           beginTime: 1528990021,
           endTime: 1528992106
         })
-        .then(({ data: responseData }) => {
-          console.log(responseData)
+        .then(responseData => {
           if (Array.isArray(responseData.data)) {
             let points = responseData.data.map(point => {
               return proj.fromLonLat([
@@ -177,6 +213,7 @@ export default {
         .post('/ship/shipList', {})
     },
     formatShoals (shoals) {
+      console.log(shoals)
       return Promise.resolve(shoals.map(v => {
         return {
           mmsiNum: v.shipMmsi,
@@ -213,6 +250,46 @@ export default {
         source
       })
       this.map.addLayer(layer)
+    },
+    moveMap (direction) {
+      const MAX_LON = 180
+      const MIN_LON = -180
+      const MAX_LAT = 60
+      const MIN_LAT = -60
+      let value
+      switch (direction) {
+        case 'top':
+          value = this.mapPos[1] + 20
+          if (value > MAX_LAT) {
+            value = MAX_LAT
+          }
+          this.mapPos[1] = value
+          break
+        case 'bottom':
+          value = this.mapPos[1] - 20
+          if (value < MIN_LAT) {
+            value = MIN_LAT
+          }
+          this.mapPos[1] = value
+          break
+        case 'left':
+          value = this.mapPos[0] - 20
+          if (value < MIN_LON) {
+            value += 360
+          }
+          this.mapPos[0] = value
+          break
+        case 'right':
+          value = this.mapPos[0] + 20
+          if (value > MAX_LON) {
+            value -= 360
+          }
+          this.mapPos[0] = value
+          break
+        default:
+          break
+      }
+      this.map.getView().setCenter(proj.fromLonLat(this.mapPos))
     }
   }
 }
@@ -220,8 +297,13 @@ export default {
 </script>
 
 <style lang="less">
+  .map-container {
+    position: relative;
+    width: 100%;
+  }
 	.map {
     width: 100%;
+    height: 600px;
     position: relative;
   }
   .ship-info {
@@ -238,5 +320,45 @@ export default {
     .ship-region {
       text-align: center;
     }
+  }
+  .ol-attribution {
+    display: none;
+  }
+  .position-control { 
+    width: 4.5em;
+    height: 4.5em;
+    background: rgba(255, 255, 255, 0.6);
+    position: absolute;
+    bottom: 20px;
+    left: .5em;
+    > button {
+      position: absolute;
+    }
+    .top {
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    .bottom {
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    .left {
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+    .right {
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+  }
+  .search-form {
+    background: #FFF;
+    position: absolute;
+    top: .5em;
+    right: .5em;
   }
 </style>

@@ -31,6 +31,9 @@
           <el-option label="区域二" value="beijing"></el-option>
         </el-select>
       </el-form-item>
+      <el-form-item label="">
+        <el-input placeholder="请输入船只名称搜索" prefix-icon="el-icon-search"></el-input>
+      </el-form-item>
     </el-form>
   </div>
 </template>

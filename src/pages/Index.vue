@@ -30,18 +30,18 @@
         </el-menu>
       </el-aside>
       <el-container>
-        <router-view/>
+        <router-view class="map-container" />
       </el-container>
     </el-container>
   </el-container>
 </template>
 
 <script>
+
 export default {
   name: 'HelloWorld',
   data () {
     return {
-      
     }
   },
   mounted () {
@@ -73,5 +73,9 @@ export default {
   }
   .el-menu {
     background-color: #316487; 
+  }
+  .map-container {
+    position: relative;
+    width: 100%;
   }
 </style>

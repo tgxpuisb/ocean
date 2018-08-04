@@ -1,5 +1,10 @@
 <template>
-  <div id="map" class="map"></div>
+	<div class="map-container">
+		<div id="map" class="map"></div>
+		<TimeBar :time="time" class="time-bar" @on-time-change="timeChange"/>
+		<div class="platform"></div>
+	</div>
+  
 </template>
 
 <script>
@@ -9,11 +14,13 @@ import OSM from 'ol/source/osm'
 import TileWMS from 'ol/source/tilewms'
 import View from 'ol/View'
 
+import TimeBar from '@/components/TimeBar'
 export default {
 	data () {
 		return {
 			msg: '',
-			map: null
+			map: null,
+			time: Date.now()
 		}
 	},
 	mounted () {
@@ -38,12 +45,37 @@ export default {
 						url: 'http://39.106.10.110:8080/geoserver/test/wms?service=WMS&version=1.1.0&request=GetMap&layers=test:chla&styles=&bbox=-180.0,-65.0,180.0,65.0&width=768&height=330&srs=EPSG:4326&format=application%2Fopenlayers2'
 					})
 				}))
-	}
+	},
+	methods: {
+		timeChange (time) {
+			console.log(time)
+		}
+	},
+  components: {
+    TimeBar
+  }
 }
 </script>
 
 <style lang="less">
 	.map {
 		width: 100%;
+	}
+	.time-bar {
+		position: absolute;
+		bottom: 0;
+		left: 50%;
+		transform: translateX(-50%);
+	}
+	.platform {
+		position: absolute;
+		bottom: 60px;
+		left: 50%;
+		transform: translateX(-50%);
+		width: 80%;
+		height:0;
+		border-width:0 5px 30px 5px;
+		border-style:none solid solid;
+		border-color:transparent transparent rgba(0, 0, 0, 0.3);
 	}
 </style>

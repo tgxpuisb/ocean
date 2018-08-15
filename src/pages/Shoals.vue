@@ -18,14 +18,15 @@ import Icon from 'ol/style/icon'
 import Feature from 'ol/feature'
 import Point from 'ol/geom/point'
 import proj from 'ol/proj'
+import LineString from 'ol/geom/linestring'
+
 // http://openlayers.org/en/latest/examples/icon-color.html
 
 
 export default {
 	data () {
 		return {
-			msg: '',
-			map: null
+			msg: ''
 		}
 	},
 	mounted () {
@@ -44,63 +45,60 @@ export default {
 				zoom: 2.4,
 				minZoom: 2.4
 			})
-		})
-		this.map.on('movestart', (data) => {
-			// console.log(data)
     })
-    this.getShoals()
-      .then(({ data: responseData }) => {
-        console.log(responseData)
-        // 数组
-        let ships = []
-        let iconStyle = new Style({
-          image: new Icon({
-            crossOrigin: 'anonymous',
-            src: '/static/ship.png'
-          })
-        })
-        if (Array.isArray(responseData.data)) {
-          responseData.data.forEach((v, index) => {
-            let ship = new Feature({
-              geometry: new Point(proj.fromLonLat([12.5 + index * 4, 41.9 + index * 2]))
-            })
-            ship.setStyle(iconStyle)
-            ships.push(ship)
-          })
-        }
-        // todo
-        // var rome = new Feature({
-        //   geometry: new Point(proj.fromLonLat([12.5, 41.9]))
-        // })
-        // rome.setStyle(new Style({
-        //   image: new Icon({
-        //     color: '#8959A8',
-        //     crossOrigin: 'anonymous',
-        //     src: 'https://openlayers.org/en/v4.6.5/examples/data/dot.png'
-        //   })
-        // }))
-        var romeSource = new SourceVector({
-          features: ships
-        })
-        var romeLayer = new Vector({
-          source: romeSource
-        })
-        this.map.addLayer(romeLayer)
+    
+    this.iconStyle = new Style({
+      image: new Icon({
+        crossOrigin: 'anonymous',
+        src: '/static/ship.png'
       })
+    })
+    this.shipIcon = new Feature({
+      geometry: new Point(proj.fromLonLat([120, 30]))
+    })
+    this.shipIcon.setStyle(this.iconStyle)
+    let source = new SourceVector({
+      features: [
+        this.shipIcon
+      ]
+    })
+    let layer = new Vector({
+      source
+    })
+    this.map.addLayer(layer)
+
+    this.drawLine()
   },
   methods: {
-    getShoals () {
-      return this
-        .$http
-        .post('/ship/shipList', {
- "shipStatusList": [{
-  "mmsiNum": 412354269,"type": 1
- }, {
-  "mmsiNum": 412420244,"type": 1
- }],
- "beginTime": 1528992021,"endTime": 1528992106
-})
-    }
+    drawLine () {
+      let points = [ [-89.8802, 32.5804], [25.4286, 46.9235] ].map(v => proj.fromLonLat(v))
+      const triangle = new LineString(points);
+      let layer = new Vector({
+        source: new SourceVector({
+          features: [
+            new Feature(triangle)
+          ]
+        })
+      })
+      this.map.addLayer(layer)
+      let startLon = 26
+      let startLat = 47
+      // console.log(layer.getSource().forEachFeature(f => {
+      //   // console.log(f)
+      //   f = new LineString(points)
+      // }))
+      console.log(layer)
+      setInterval(() => {
+        points.push(proj.fromLonLat([startLon++, startLat++]))
+        // layer.getSource()
+        layer.setSource(new SourceVector({
+          features: [
+            new Feature(new LineString(points))
+          ]
+        }))
+      }, 500)
+    },
+    
   }
 }
 //'/shipStatus/shipStatusList'

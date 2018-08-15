@@ -40,7 +40,6 @@ export default {
 	data () {
 		return {
 			msg: '',
-			map: null,
 			time: Date.now(),
 			icons: [
 				{
@@ -68,34 +67,40 @@ export default {
 		}
 	},
 	mounted () {
+		let extent = ol.proj.get('EPSG:3857').getExtent()
 		this.map = new Map({
 			layers: [
 				new Tile({
-					source: new OSM()
+					source: new OSM({
+						// wrapX: false
+					})
 				})
 			],
 			target: 'map',
 			view: new View({
 				center: [0, 0],
-				zoom: 2,
-				minZoom: 2,
-				// projection:'EPSG:3857'
+				zoom: 2.4,
+				minZoom: 2.4,
+				projection:'EPSG:3857',
+				// extent: [extent[0] * 2, extent[1] / 6, extent[2] * 2, extent[3] / 5]
 			}),
 			loadTilesWhileAnimating: true
 		})
+		console.log(ol.proj.get('EPSG:3857').getExtent())
 		this.map.on('movestart', (data) => {
 			console.log(data)
 		})
 		this.map.addLayer(new Tile({
 			source: new TileWMS({
-				url: '/geo/cite/wms?service=WMS&version=1.1.0&request=GetMap&layers=cite:sst&styles=&bbox=-179.99999694739424,-79.99999694633365,179.99999694739424,79.99999694633365&width=768&height=341&srs=EPSG:4326&format=application%2Fopenlayers2',
+				url: '/geo/cite/wms?service=WMS&version=1.1.0&request=GetMap&layers=cite:sst&styles=&srs=EPSG:4326&format=application%2Fopenlayers2',
 				params: {
 					LAYERS:'cite:sst',
 					STYLES:'nc_sst',
 					TILED:true
 				},
 				serverType: 'geoserver',
-				ratio:1
+				ratio:1,
+				// wrapX: false
 			})
 		}))
 		// this.map.addLayer(new ImageLayer({

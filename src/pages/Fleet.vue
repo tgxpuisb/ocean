@@ -1,10 +1,6 @@
 <template>
   <div class="map-container">
     <div id="map" class="map">
-      <div id="ship-popup" class="ship-info" v-show="currentShipInfo.show">
-        <p class="ship-name" v-text="currentShipInfo.name"></p>
-        <p class="ship-region" v-text="currentShipInfo.shipRegion"></p>
-      </div>
     </div>
     <div class="position-control ol-control">
       <button class="top" @click="moveMap('top')">↑</button>
@@ -31,10 +27,26 @@
           <el-option label="区域二" value="beijing"></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="">
-        <el-input placeholder="请输入船只名称搜索" prefix-icon="el-icon-search"></el-input>
-      </el-form-item>
+      <el-row>
+        <el-col :span="19" :push="1">
+          <el-input placeholder="请输入船只名称搜索" size="mini"></el-input>
+        </el-col>
+        <el-col :span="2" :push="1">
+          <el-button type="primary" size="mini" icon="el-icon-search"></el-button>
+        </el-col>
+      </el-row>
+      <el-row class="hot-search">
+        <el-col :span="6">热门搜索</el-col>
+        <el-col :span="6" class="hot-search-result">xxx号</el-col>
+      </el-row>
     </el-form>
+    <el-dialog
+      title="船只信息"
+      :visible.sync="dialog.visible"
+      width="30%">
+      <span>名称: {{ dialog.name }}</span><br><br>
+      <span>地区: {{ dialog.region}}</span>
+    </el-dialog>
   </div>
 </template>
 
@@ -64,25 +76,21 @@ export default {
 	data () {
 		return {
 			msg: '',
-      // map: null,
-      currentShipInfo: {
-        x: 0,
-        y: 0,
-        name: '',
-        show: false,
-        shipRegion: ''
-      },
       mapPos: [115, 0],
       shipSearch: {
         nation: '',
         type: '',
         name: ''
+      },
+      dialog: {
+        visible: false,
+        name: '',
+        region: ''
       }
 		}
 	},
 	mounted () {
     this.initMap()
-    this.initPopup()
     this
       .getShoals()
       .then(responseData => this.formatShoals(responseData.data))
@@ -131,7 +139,6 @@ export default {
         let feature = this.map.forEachFeatureAtPixel(evt.pixel, feature => {
           console.log(feature)
           var coordinates = feature.getGeometry().getCoordinates();
-          this.popup.setPosition(coordinates);
           if (feature.shipInfo) {
             this.showShipInfo(feature.shipInfo)
             this.showGuiji(feature.shipInfo)
@@ -142,15 +149,6 @@ export default {
         })
         // console.log(feature)
       })
-    },
-    initPopup () {
-      this.popup = new Overlay({
-        element: document.getElementById('ship-popup'),
-        positioning: 'top-left',
-        stopEvent: false,
-        offset: [0, -50]
-      })
-      this.map.addOverlay(this.popup)
     },
     showGuiji (shipInfo) {
       this
@@ -182,11 +180,6 @@ export default {
           // todo
           // let points="-90 90,90 -90,100 50,150 80.66666"
           let points = [ [-89.8802, 32.5804], [25.4286, 46.9235] ].map(v => proj.fromLonLat(v))
-          const radius = 10e6;
-          const cos30 = Math.cos(Math.PI / 6);
-          const sin30 = Math.sin(Math.PI / 6);
-          const rise = radius * sin30;
-          const run = radius * cos30;
           // console.log([0, radius], [run, -rise], [-run, -rise], [0, radius])
           const triangle = new LineString(points);
           let layer = new Vector({
@@ -201,14 +194,14 @@ export default {
     },
     showShipInfo (shipInfo) {
       // 点击之后显示船信息
-      this.currentShipInfo.show = true
-      this.currentShipInfo.name = shipInfo.shipName
-      this.currentShipInfo.shipRegion = shipInfo.shipRegion
+      this.dialog.visible = true
+      this.dialog.name = shipInfo.shipName
+      this.dialog.region = shipInfo.shipRegion
     },
     closeShipInfo () {
-      this.currentShipInfo.show = false
-      this.currentShipInfo.name = ''
-      this.currentShipInfo.shipRegion = ''
+      this.dialog.visible = false
+      this.dialog.name = ''
+      this.dialog.region = ''
     },
     getShoals () {
       return this
@@ -299,7 +292,7 @@ export default {
 //'/shipStatus/shipStatusList'
 </script>
 
-<style lang="less">
+<style lang="less" scope>
   .map-container {
     position: relative;
     width: 100%;
@@ -359,9 +352,25 @@ export default {
     }
   }
   .search-form {
+    padding: 10px 10px 10px 0px;
+    border-radius: 4px;
     background: #FFF;
     position: absolute;
     top: .5em;
     right: .5em;
+  }
+  .hot-search {
+    padding-left: 4px;
+    color: #606266;
+    padding-top: 10px;
+    font-size: 12px;
+    text-align: center;
+  }
+  .hot-search-result {
+    cursor: pointer;
+    color: #409EFF;
+  }
+  .el-dialog__body {
+    padding: 10px 20px 20px 20px;
   }
 </style>

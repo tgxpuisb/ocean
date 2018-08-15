@@ -2,7 +2,13 @@
 	<div class="map-container">
 		<div id="map" class="map"></div>
 		<TimeBar :time="time" class="time-bar" @on-time-change="timeChange"/>
-		<div class="platform"></div>
+		<div class="platform">
+			<ul>
+				<li v-for="(icon, index) in icons" :key="index">
+					<img :src="icon.url">
+				</li>
+			</ul>
+		</div>
 	</div>
   
 </template>
@@ -35,7 +41,30 @@ export default {
 		return {
 			msg: '',
 			map: null,
-			time: Date.now()
+			time: Date.now(),
+			icons: [
+				{
+					url: '/static/icon_1.png'
+				},
+				{
+					url: '/static/icon_2.png'
+				},
+				{
+					url: '/static/icon_3.png'
+				},
+				{
+					url: '/static/icon_4.png'
+				},
+				{
+					url: '/static/icon_5.png'
+				},
+				{
+					url: '/static/icon_6.png'
+				},
+				{
+					url: '/static/icon_7.png'
+				}
+			]
 		}
 	},
 	mounted () {
@@ -115,13 +144,32 @@ export default {
 	}
 	.platform {
 		position: absolute;
-		bottom: 60px;
+		bottom: 48px;
 		left: 50%;
 		transform: translateX(-50%);
 		width: 80%;
 		height:0;
-		border-width:0 5px 30px 5px;
+		border-width:0 5px 20px 5px;
 		border-style:none solid solid;
 		border-color:transparent transparent rgba(0, 0, 0, 0.3);
+		> ul {
+			width: 100%;
+			position: absolute;
+			top: -24px;
+			display: flex;
+			justify-content: space-around;
+		}
+		li {
+			width: 40px;
+			height: 40px;
+		}
+		img {
+			width: 100%;
+			height: 100%;
+			display: block;
+		}
+		img:hover {
+			transform: scale(1.2);
+		}
 	}
 </style>

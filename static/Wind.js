@@ -1,6 +1,6 @@
-;(function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('ol')) :
-	typeof define === 'function' && define.amd ? define(['ol'], factory) :
+(function (global, factory) {
+	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('openlayers')) :
+	typeof define === 'function' && define.amd ? define(['openlayers'], factory) :
 	(global.WindLayer = factory(global.ol));
 }(this, (function (ol) { 'use strict';
 
@@ -570,6 +570,7 @@ var WindyLayer = function (_ol$layer$Image) {
   };
 
   WindyLayer.prototype.canvasFunction = function canvasFunction(extent, resolution, pixelRatio, size, projection) {
+    console.log(size)
     if (!this._canvas) {
       this._canvas = createCanvas(size[0], size[1]);
     } else {
@@ -587,8 +588,7 @@ var WindyLayer = function (_ol$layer$Image) {
     var _extent = this._getMapExtent();
     if (size && _extent) {
       var _projection = this.get('projection');
-      var transformExtent = require('ol/proj').default.transformExtent;
-      var extent = transformExtent(_extent, _projection, 'EPSG:4326');
+      var extent = ol.proj.transformExtent(_extent, _projection, 'EPSG:4326');
       return [[[0, 0], [size[0], size[1]]], size[0], size[1], [[extent[0], extent[1]], [extent[2], extent[3]]]];
     } else {
       return false;
@@ -608,7 +608,7 @@ var WindyLayer = function (_ol$layer$Image) {
   };
 
   WindyLayer.prototype.appendTo = function appendTo(map) {
-    if (map && ol.Map) {
+    if (map && map instanceof ol.Map) {
       this.set('originMap', map);
       map.addLayer(this);
     } else {

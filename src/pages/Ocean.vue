@@ -67,7 +67,6 @@ export default {
 		}
 	},
 	mounted () {
-		let extent = ol.proj.get('EPSG:3857').getExtent()
 		this.map = new Map({
 			layers: [
 				new Tile({
@@ -86,7 +85,6 @@ export default {
 			}),
 			loadTilesWhileAnimating: true
 		})
-		console.log(ol.proj.get('EPSG:3857').getExtent())
 		this.map.on('movestart', (data) => {
 			console.log(data)
 		})
@@ -99,7 +97,6 @@ export default {
 					TILED:true
 				},
 				serverType: 'geoserver',
-				ratio:1,
 				// wrapX: false
 			})
 		}))
@@ -116,15 +113,15 @@ export default {
 		// 	})
 		// }))
 		// this.map.addLayer()
-		// axios.get('/out1.json').then(res => {
-		// 	if (res.data) {
-		// 		let wind = new WindLayer(res.data, {
-		// 			projection: 'EPSG:3857',
-		// 			ratio: 1
-		// 		})
-		// 		wind.appendTo(this.map)
-		// 	}
-		// })
+		axios.get('/json/out.json').then(res => {
+			if (res.data) {
+				let wind = new WindLayer(res.data, {
+					projection: 'EPSG:3857',
+					ratio: 1
+				})
+				wind.appendTo(this.map)
+			}
+		})
 	},
 	methods: {
 		timeChange (time) {

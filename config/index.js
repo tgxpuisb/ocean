@@ -12,6 +12,7 @@ module.exports = {
     assetsPublicPath: '/',
     proxyTable: {
       '/geo': 'http://116.62.237.253:8080',
+      '/json': 'http://116.62.237.253:8080'
       // '/out1.json': 'http://104.225.236.196:8080'
     },
 

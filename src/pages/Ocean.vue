@@ -260,12 +260,13 @@ export default {
 			width: 100%;
 			height: 100%;
 			display: block;
+			transform-origin: center center;
 		}
 		.active {
-			transform: scale(1.2);
+			transform: scale(1.3);
 		}
 		img:hover {
-			transform: scale(1.2);
+			transform: scale(1.3);
 		}
 	}
 </style>

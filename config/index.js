@@ -12,8 +12,14 @@ module.exports = {
     assetsPublicPath: '/',
     proxyTable: {
       '/geo': 'http://116.62.237.253:8080',
-      '/json': 'http://116.62.237.253:8080'
-      // '/out1.json': 'http://104.225.236.196:8080'
+      '/json': 'http://116.62.237.253:8080',
+      '/serviceUrl': {
+        target:'http://39.106.10.110:9999/serviceUrl/',
+        changeOrigin: true,
+        pathRewrite: {
+          '^/serviceUrl': '/'
+        }
+      }
     },
 
     // Various Dev Server settings

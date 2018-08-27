@@ -67,7 +67,7 @@ export default {
     })
     this.map.addLayer(layer)
 
-    this.drawLine()
+    // this.drawLine()
   },
   methods: {
     drawLine () {

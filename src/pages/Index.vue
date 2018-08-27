@@ -11,10 +11,6 @@
             <i class="el-icon-document"></i>
             <span slot="title">海洋情况</span>
           </el-menu-item>
-          <el-menu-item index="Meteorology" :route="{path: '/meteorology'}">
-            <i class="el-icon-document"></i>
-            <span slot="title">气象情况</span>
-          </el-menu-item>
           <el-menu-item index="Fleet" :route="{path: '/fleet'}">
             <i class="el-icon-setting"></i>
             <span slot="title">舰队信息展示</span>
@@ -22,10 +18,6 @@
           <el-menu-item index="Shoals" :route="{path: '/shoals'}">
             <i class="el-icon-document"></i>
             <span slot="title">智能鱼群预测</span>
-          </el-menu-item>
-          <el-menu-item index="Info" :route="{path: '/info'}">
-            <i class="el-icon-tickets"></i>
-            <span slot="title">信息交互</span>
           </el-menu-item>
         </el-menu>
       </el-aside>

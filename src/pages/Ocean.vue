@@ -5,7 +5,7 @@
 		<div class="platform">
 			<ul>
 				<li v-for="(icon, index) in icons" :key="index">
-					<img :src="icon.url">
+					<img :src="icon.url" :title="icon.title" @click="handleLayer(icon.type, index)" :class="{ active: icon.isShow }">
 				</li>
 			</ul>
 		</div>
@@ -14,28 +14,29 @@
 </template>
 
 <script>
-// import Map from 'ol/map'
 const Map = ol.Map
 const Tile = ol.layer.Tile
-// import Tile from 'ol/layer/tile'
 const OSM = ol.source.OSM
 const TileWMS = ol.source.TileWMS
-// import OSM from 'ol/source/osm'
-// import TileWMS from 'ol/source/tilewms'
 const View = ol.View
-// import View from 'ol/View'
-// import {Image as ImageLayer, Tile as TileLayer} from 'ol/layer.js';
-// import ImageLayer from 'ol/layer/image'
 const ImageLayer = ol.layer.Image
-// import ImageWMS from 'ol/source/imagewms';
 const ImageWMS = ol.source.ImageWMS
 
-// const { WindLayer } = require('@/assets/Wind')
-// console.log(WindLayer)
-
-import axios from 'axios'
-
 import TimeBar from '@/components/TimeBar'
+
+// 哪些不被数据监听的数据
+const unReactiveData = {
+	map: null,
+	chalLayer: null,
+	gfsLayer: null,
+	sstLayer: null,
+	sstaLayer: null,
+	sshLayer: null,
+	sshaLayer: null,
+	sfLayer: null,
+	JSONLayerZIndex: 1000
+}
+
 export default {
 	data () {
 		return {
@@ -43,31 +44,51 @@ export default {
 			time: Date.now(),
 			icons: [
 				{
-					url: '/static/icon_1.png'
+				  title:'叶绿素',
+          type:'chla',
+					url: '/static/icon_1.png',
+          isShow: false,
 				},
 				{
-					url: '/static/icon_2.png'
+          title:'大气数据',
+          type:'gfs',
+					url: '/static/icon_2.png',
+          isShow: false,
 				},
 				{
-					url: '/static/icon_3.png'
+				  title:'表温',
+          type:'sst',
+					url: '/static/icon_3.png',
+          isShow: false,
 				},
 				{
+				  title:'表温距平值',
+          type:'ssta',
 					url: '/static/icon_4.png'
 				},
 				{
-					url: '/static/icon_5.png'
+          title:'海平面高度',
+          type:'ssh',
+					url: '/static/icon_5.png',
+          isShow: false,
 				},
 				{
-					url: '/static/icon_6.png'
+          title:'海平面距平值',
+          type:'ssha',
+					url: '/static/icon_6.png',
+          isShow: false,
 				},
 				{
-					url: '/static/icon_7.png'
+          title:'盐度',
+          type:'sf',
+					url: '/static/icon_7.png',
+          isShow: false,
 				}
 			]
 		}
 	},
 	mounted () {
-		this.map = new Map({
+		unReactiveData.map = new Map({
 			layers: [
 				new Tile({
 					source: new OSM({
@@ -85,9 +106,10 @@ export default {
 			}),
 			loadTilesWhileAnimating: true
 		})
-		this.map.on('movestart', (data) => {
-			console.log(data)
+		unReactiveData.map.on('movestart', (data) => {
+			// console.log(data)
 		})
+		/*
 		this.map.addLayer(new Tile({
 			source: new TileWMS({
 				url: '/geo/cite/wms?service=WMS&version=1.1.0&request=GetMap&layers=cite:sst&styles=&srs=EPSG:4326&format=application%2Fopenlayers2',
@@ -100,6 +122,7 @@ export default {
 				// wrapX: false
 			})
 		}))
+		*/
 		// this.map.addLayer(new ImageLayer({
 		// 	source: new ImageWMS({
 		// 		url: '/geo/cite/wms?service=WMS&version=1.1.0&request=GetMap&layers=cite:sst&styles=&bbox=-179.99999694739424,-79.99999694633365,179.99999694739424,79.99999694633365&width=768&height=341&srs=EPSG:4326&format=application%2Fopenlayers2',
@@ -113,19 +136,87 @@ export default {
 		// 	})
 		// }))
 		// this.map.addLayer()
-		axios.get('/json/out.json').then(res => {
-			if (res.data) {
-				let wind = new WindLayer(res.data, {
-					projection: 'EPSG:3857',
-					ratio: 1
-				})
-				wind.appendTo(this.map)
-			}
-		})
+		// axios.get('/json/out.json').then(res => {
+		// 	if (res.data) {
+		// 		let wind = new WindLayer(res.data, {
+		// 			projection: 'EPSG:3857',
+		// 			ratio: 1
+		// 		})
+		// 		wind.appendTo(this.map)
+		// 	}
+		// })
 	},
 	methods: {
 		timeChange (time) {
 			console.log(time)
+		},
+		handleLayer (type, index) {
+			if (unReactiveData[type + 'Layer']) {
+				// 如果图层已经存在,则移除
+				unReactiveData.map.removeLayer(unReactiveData[type + 'Layer'])
+				unReactiveData[type + 'Layer'] = null
+				this.icons[index].isShow = false
+			} else {
+				this.getLayerURL({
+					type,
+					date: '2016-01-01'
+				}).then(response => {
+					console.log(response)
+					if (response.code == 0 && response.data) {
+						let layer
+						if (response.data.type === 'gfs') {
+							this
+								.createJSONLayer(response.data)
+								.then(layer => {
+									console.log(layer)
+									layer.appendTo(unReactiveData.map)
+									unReactiveData[type + 'Layer'] = layer
+									this.icons[index].isShow = true
+								})
+						} else {
+							// todo 创建了tileLayer的时候,如果有JSONlayer则JSONlayer要提前
+							layer = this.createTileLayer(response.data)
+							unReactiveData.map.addLayer(layer)
+							unReactiveData[type + 'Layer'] = layer
+							this.icons[index].isShow = true
+							console.log(unReactiveData.map.getLayers())
+						}
+					}
+				})
+			}
+		},
+		getLayerURL (data) {
+			return this.$http.post('/serviceUrl/getServiceUrl', data)
+		},
+		createTileLayer (data) {
+			return new Tile({
+				source: new TileWMS({
+					url: data.url,
+					params: {
+						LAYERS: data.layers,
+						STYLES: data.styles,
+						TILED: true
+					},
+					serverType: 'geoserver',
+				})
+			})
+		},
+		createJSONLayer (data) {
+			return this
+				.$http
+				.get(data.url, {
+					baseURL: undefined
+				})
+				.then(body => {
+					console.log(body)
+					return Promise.resolve(
+						new WindLayer(body, {
+							projection: 'EPSG:3857',
+							ratio: 1,
+							zIndex: unReactiveData.JSONLayerZIndex++
+						})
+					)
+				})
 		}
 	},
   components: {
@@ -169,6 +260,9 @@ export default {
 			width: 100%;
 			height: 100%;
 			display: block;
+		}
+		.active {
+			transform: scale(1.2);
 		}
 		img:hover {
 			transform: scale(1.2);

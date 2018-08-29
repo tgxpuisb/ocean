@@ -50,17 +50,28 @@ export default {
     this.iconStyle = new Style({
       image: new Icon({
         crossOrigin: 'anonymous',
-        src: '/static/ship.png'
+        src: '/static/fish.png',
+        scale: 0.4
       })
     })
     this.shipIcon = new Feature({
       geometry: new Point(proj.fromLonLat([120, 30]))
     })
     this.shipIcon.setStyle(this.iconStyle)
+    let pointss = [[124, 30], [126, 32], [128, 28], [0, 0], [-4, -4], [54, -20], [80, -50], [20, 35]
+      ,[-120, 0], [-120, -3], [-140, 40]
+    ]
     let source = new SourceVector({
-      features: [
-        this.shipIcon
-      ]
+      // features: [
+      //   this.shipIcon
+      // ]
+      features: pointss.map(po => {
+        let f = new Feature({
+          geometry: new Point(proj.fromLonLat(po))
+        })
+        f.setStyle(this.iconStyle)
+        return f
+      })
     })
     let layer = new Vector({
       source

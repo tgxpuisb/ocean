@@ -166,7 +166,6 @@ export default {
                 point.latitude
               ])
             })
-            console.log(points)
             let layer = new Vector({
               source: new SourceVector({
                 features: [
@@ -209,7 +208,6 @@ export default {
         .post('/ship/shipList', {})
     },
     formatShoals (shoals) {
-      console.log(shoals)
       return Promise.resolve(shoals.map(v => {
         return {
           mmsiNum: v.shipMmsi,
@@ -218,7 +216,7 @@ export default {
       }))
     },
     getShipStatusList (list, duration = {}) {
-      let beginTime,endTime
+      let beginTime, endTime
       return this
           .$http
           .post('/shipStatus/shipStatusList', {
@@ -231,7 +229,6 @@ export default {
       return Promise.resolve(list.filter(v => v.shipStatusInfo))
     },
     drawShip (ships) {
-      console.log(ships)
       let source = new SourceVector({
         features: ships.map(ship => {
           let icon = new Feature({

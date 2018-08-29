@@ -2,7 +2,7 @@
   <el-container>
     <el-header class="banner-header" height="42px">海洋渔业生产卫星综合应用服务系统</el-header>
     <el-container>
-      <el-aside width="200px">
+      <el-aside class="app-aside-left">
         <el-menu
           :router="true"
           :default-active="$route.name"
@@ -43,6 +43,10 @@ export default {
 </script>
 
 <style lang="less">
+  .app-aside-left {
+    align-self: stretch;
+    width: 200px !important;
+  }
   .banner-header {
     color: #2d5979;
     background-color: #54cbfb;
@@ -64,7 +68,8 @@ export default {
     }
   }
   .el-menu {
-    background-color: #316487; 
+    height: 100%;
+    background-color: #316487;
   }
   .map-container {
     position: relative;

@@ -1,6 +1,18 @@
 <template>
   <el-container>
-    <el-header class="banner-header" height="42px">海洋渔业生产卫星综合应用服务系统</el-header>
+    <el-header class="banner-header">海洋渔业生产卫星综合应用服务系统
+      <el-date-picker
+          class="header-date-picker"
+          v-model="time"
+          type="datetimerange"
+          range-separator="至"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期"
+          :editable="false"
+          align="right"
+          @change="timeChange">
+        </el-date-picker>
+    </el-header>
     <el-container>
       <el-aside class="app-aside-left">
         <el-menu
@@ -22,7 +34,7 @@
         </el-menu>
       </el-aside>
       <el-container>
-        <router-view class="map-container" />
+        <router-view class="map-container" ref="route"/>
       </el-container>
     </el-container>
   </el-container>
@@ -31,13 +43,25 @@
 <script>
 
 export default {
-  name: 'HelloWorld',
   data () {
+    let today = new Date()
+    let yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000)
     return {
+      time: [
+        new Date(yesterday.getFullYear(), yesterday.getMonth(), yesterday.getDate()),
+        new Date(today.getFullYear(), today.getMonth(), today.getDate())
+      ] // 查询日期
     }
   },
   mounted () {
-    console.log(this.$route)
+    console.log(this.$refs)
+  },
+  methods: {
+    timeChange () {
+      if (this.$refs.route.globalTimeChange) {
+        this.$refs.route.globalTimeChange(this.time)
+      }
+    }
   }
 }
 </script>
@@ -50,7 +74,8 @@ export default {
   .banner-header {
     color: #2d5979;
     background-color: #54cbfb;
-    line-height: 42px;
+    line-height: 40px;
+    height: 40px !important;
     font-size: 18px;
   }
   .el-menu-item {
@@ -74,5 +99,10 @@ export default {
   .map-container {
     position: relative;
     width: 100%;
+  }
+  .header-date-picker {
+    float: right;
+    border: 0 none;
+    border-radius: 0;
   }
 </style>

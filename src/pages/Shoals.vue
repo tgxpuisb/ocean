@@ -5,111 +5,114 @@
 </template>
 
 <script>
-import Map from 'ol/map'
-import Tile from 'ol/layer/tile'
-import OSM from 'ol/source/osm'
-import TileWMS from 'ol/source/tilewms'
-import View from 'ol/View'
+// import Map from 'ol/map'
+// import Tile from 'ol/layer/tile'
+// import OSM from 'ol/source/osm'
+// import TileWMS from 'ol/source/tilewms'
+// import View from 'ol/View'
 
-import Vector from 'ol/layer/vector'
-import SourceVector from 'ol/source/vector'
-import Style from 'ol/style/style'
-import Icon from 'ol/style/icon'
-import Feature from 'ol/feature'
-import Point from 'ol/geom/point'
-import proj from 'ol/proj'
-import LineString from 'ol/geom/linestring'
+// import Vector from 'ol/layer/vector'
+// import SourceVector from 'ol/source/vector'
+// import Style from 'ol/style/style'
+// import Icon from 'ol/style/icon'
+// import Feature from 'ol/feature'
+// import Point from 'ol/geom/point'
+// import proj from 'ol/proj'
+// import LineString from 'ol/geom/linestring'
+const Map = ol.Map
+const Tile = ol.layer.Tile
+const OSM = ol.source.OSM
+const TileWMS = ol.source.TileWMS
+const View = ol.View
+
+const Vector = ol.layer.Vector
+const SourceVector = ol.source.Vector
+const Style = ol.style.Style
+const Icon = ol.style.Icon
+const Feature = ol.Feature
+const Point = ol.geom.Point
+const proj = ol.proj
+const LineString = ol.geom.LineString
 
 // http://openlayers.org/en/latest/examples/icon-color.html
-
+const unReactiveData = {
+  map: null,
+  fishIconStyle: null, // 金枪鱼图标
+  sleeveFishIconStyle: null, // 鱿鱼图标
+  shoalsLayer: null
+}
 
 export default {
 	data () {
 		return {
-			msg: ''
 		}
 	},
 	mounted () {
-		this.map = new Map({
-			layers: [
-				new Tile({
-					source: new OSM()
-        }),
-        new Vector({
-          // style
-        })
-			],
-			target: 'map',
-			view: new View({
-				center: [0, 0],
-				zoom: 2.4,
-				minZoom: 2.4
-			})
-    })
-    
-    this.iconStyle = new Style({
-      image: new Icon({
-        crossOrigin: 'anonymous',
-        src: '/static/fish.png',
-        scale: 0.4
-      })
-    })
-    this.shipIcon = new Feature({
-      geometry: new Point(proj.fromLonLat([120, 30]))
-    })
-    this.shipIcon.setStyle(this.iconStyle)
-    let pointss = [[124, 30], [126, 32], [128, 28], [0, 0], [-4, -4], [54, -20], [80, -50], [20, 35]
-      ,[-120, 0], [-120, -3], [-140, 40]
-    ]
-    let source = new SourceVector({
-      // features: [
-      //   this.shipIcon
-      // ]
-      features: pointss.map(po => {
-        let f = new Feature({
-          geometry: new Point(proj.fromLonLat(po))
-        })
-        f.setStyle(this.iconStyle)
-        return f
-      })
-    })
-    let layer = new Vector({
-      source
-    })
-    this.map.addLayer(layer)
-
+    this.initMap()
+    this.initIconStyle()
+    this.drawShoals()
     // this.drawLine()
   },
   methods: {
-    drawLine () {
-      let points = [ [-89.8802, 32.5804], [25.4286, 46.9235] ].map(v => proj.fromLonLat(v))
-      const triangle = new LineString(points);
-      let layer = new Vector({
-        source: new SourceVector({
-          features: [
-            new Feature(triangle)
-          ]
+    initMap () {
+      unReactiveData.map = new Map({
+        layers: [
+          new Tile({
+            source: new OSM()
+          })
+        ],
+        target: 'map',
+        view: new View({
+          center: [0, 0],
+          zoom: 2.4,
+          minZoom: 2.4
         })
       })
-      this.map.addLayer(layer)
-      let startLon = 26
-      let startLat = 47
-      // console.log(layer.getSource().forEachFeature(f => {
-      //   // console.log(f)
-      //   f = new LineString(points)
-      // }))
-      console.log(layer)
-      setInterval(() => {
-        points.push(proj.fromLonLat([startLon++, startLat++]))
-        // layer.getSource()
-        layer.setSource(new SourceVector({
-          features: [
-            new Feature(new LineString(points))
-          ]
-        }))
-      }, 500)
     },
-    
+    initIconStyle () {
+      unReactiveData.fishIconStyle = new Style({
+        image: new Icon({
+          crossOrigin: 'anonymous',
+          src: '/static/fish.png',
+          scale: 0.4
+        })
+      })
+      unReactiveData.sleeveFishIconStyle = new Style({
+        image: new Icon({
+          crossOrigin: 'anonymous',
+          src: '/static/sleeve-fish.png',
+          scale: 0.4
+        })
+      })
+    },
+    // 绘制鱼群
+    drawShoals () {
+      if (unReactiveData.shoalsLayer) {
+        unReactiveData.map.removeLayer(unReactiveData.shoalsLayer)
+      }
+      let points = [[124, 30], [126, 32], [128, 28], [0, 0], [-4, -4], [54, -20], [80, -50], [20, 35]
+        ,[-120, 0], [-120, -3], [-140, 40], [-126, 20], [-52, 20], [-100, 10], [-40, 8],
+        [-42, -30]
+      ].filter(v => Math.random() > 0.4)
+      unReactiveData.shoalsLayer = new Vector({
+        source: new SourceVector({
+          features: points.map(point => {
+            let feature = new Feature({
+              geometry: new Point(proj.fromLonLat(point))
+            })
+            feature.setStyle(Math.random() > 0.5 ? unReactiveData.fishIconStyle : unReactiveData.sleeveFishIconStyle)
+            return feature
+          })
+        })
+      })
+
+      unReactiveData.map.addLayer(unReactiveData.shoalsLayer)
+    },
+    // 全局的时间变化
+    globalTimeChange (times) {
+      console.log(times)
+      this.drawShoals()
+    }
   }
 }
 //'/shipStatus/shipStatusList'

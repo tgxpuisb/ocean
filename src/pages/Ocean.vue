@@ -37,6 +37,8 @@ const unReactiveData = {
 	JSONLayerZIndex: 1000
 }
 
+import axios from 'axios'
+
 export default {
 	data () {
 		return {
@@ -145,6 +147,15 @@ export default {
 		// 		wind.appendTo(this.map)
 		// 	}
 		// })
+		axios.get('/json/oil/data-2018-8-1.json').then(res => {
+			// if (res.data) {
+			// 	let wind = new WindLayer(res.data, {
+			// 		projection: 'EPSG:3857',
+			// 		ratio: 1
+			// 	})
+			// 	wind.appendTo(unReactiveData.map)
+			// }
+		})
 	},
 	methods: {
 		timeChange (time) {

@@ -51,30 +51,53 @@
 </template>
 
 <script>
-import Map from 'ol/map'
-import Tile from 'ol/layer/tile'
-import OSM from 'ol/source/osm'
-import TileWMS from 'ol/source/tilewms'
-import View from 'ol/View'
+// import Map from 'ol/map'
+// import Tile from 'ol/layer/tile'
+// import OSM from 'ol/source/osm'
+// import TileWMS from 'ol/source/tilewms'
+// import View from 'ol/View'
 
-import Vector from 'ol/layer/vector'
-import SourceVector from 'ol/source/vector'
-import Style from 'ol/style/style'
-import Icon from 'ol/style/icon'
-import Feature from 'ol/feature'
-import Point from 'ol/geom/point'
-import proj from 'ol/proj'
-import Overlay from 'ol/overlay'
-import ZoomSlider from 'ol/control/zoomslider.js'
-import 'ol/ol.css'
+const Map = ol.Map
+const Tile = ol.layer.Tile
+const OSM = ol.source.OSM
+const TileWMS = ol.source.TileWMS
+const View = ol.View
 
-import LineString from 'ol/geom/linestring'
+const VectorLayer = ol.layer.Vector
+const VectorSource = ol.source.Vector
+const Style = ol.style.Style
+const Icon = ol.style.Icon
+const Feature = ol.Feature
+const Point = ol.geom.Point
+const proj = ol.proj
+const Overlay = ol.Overlay
+const ZoomSlider = ol.control.ZoomSlider
+const LineString = ol.geom.LineString
+
+// import Style from 'ol/style/style'
+// import Icon from 'ol/style/icon'
+// import Feature from 'ol/feature'
+// import Point from 'ol/geom/point'
+// import proj from 'ol/proj'
+// import Overlay from 'ol/overlay'
+// import ZoomSlider from 'ol/control/zoomslider.js'
+// import 'ol/ol.css'
+// import LineString from 'ol/geom/linestring'
 // http://openlayers.org/en/latest/examples/icon-color.html
 
+const unReactiveData = {
+  map: null,
+  iconStyle: null, // 船的图标style
+  shipLayer: null, // 船图层
+  trailLayer: null, // 轨迹图层
+}
 
 export default {
 	data () {
 		return {
+      shipQuery: {
+
+      }, // 小船的查询数据
 			msg: '',
       mapPos: [115, 0],
       shipSearch: {
@@ -91,105 +114,145 @@ export default {
 	},
 	mounted () {
     this.initMap()
-    this
-      .getShoals()
-      .then(responseData => this.formatShoals(responseData.data))
-      .then(data => {
-        return this.getShipStatusList(data)
-      })
-      .then(responseData => this.formatShipStatusList(responseData.data))
-      .then(this.drawShip)
-      .then(() => {
-        this.map.updateSize()
-        this.bindEvent()
-      })
-      .catch(e => {
-        console.log(e)
-      })
+    this.renderShip()
+    this.bindEvent()
+    // this
+    //   .getShoals()
+    //   .then(responseData => this.formatShoals(responseData.data))
+    //   .then(data => {
+    //     return this.getShipStatusList(data)
+    //   })
+    //   .then(responseData => this.formatShipStatusList(responseData.data))
+    //   .then(this.drawShip)
+    //   .then(() => {
+    //     unReactiveData.map.updateSize()
+    //     this.bindEvent()
+    //   })
+    //   .catch(e => {
+    //     console.log(e)
+    //   })
   },
   methods: {
     initMap () {
-      this.map = new Map({
+      // 设置map
+      unReactiveData.map = new Map({
         layers: [
           new Tile({
-            source: new OSM()
-          }),
-          new Vector({
-            // style
+            source: new OSM(),
           })
         ],
         target: 'map',
         view: new View({
           center: proj.fromLonLat(this.mapPos),
           zoom: 2.4,
-          minZoom: 2.4
+          minZoom: 2.4,
         })
       })
-      this.iconStyle = new Style({
+      // 设置小船的样子
+      unReactiveData.iconStyle = new Style({
         image: new Icon({
           crossOrigin: 'anonymous',
           src: '/static/ship.png',
           scale: 0.3
         })
       })
-      this.map.addControl(new ZoomSlider())
+      // 添加控制器
+      unReactiveData.map.addControl(new ZoomSlider())
+    },
+    // 渲染小船们
+    renderShip () {
+      // 获取小船数据, 数据format 渲染
+      this
+        .getShip(this.shipQuery)
+        .then(response => {
+          if (response.code === '0' && Array.isArray(response.data)) {
+            return this.formatShip(response.data)
+          } else {
+            return Promise.reject('error')
+          }
+        })
+        .then(this.drawShip)
+    },
+    // 过滤数据
+    formatShip (shoals) {
+      return Promise.resolve(shoals.filter(v => {
+        return v.latitude && v.longitude
+      }))
+    },
+    // 绘制小船
+    drawShip (ships) {
+      if (unReactiveData.shipLayer) {
+        unReactiveData.map.removeLayer(unReactiveData.shipLayer)
+      }
+      unReactiveData.shipLayer = new VectorLayer({
+        source: new VectorSource({
+          features: ships.map(ship => {
+            let icon = new Feature({
+              geometry: new Point(
+                proj.fromLonLat([ship.longitude, ship.latitude])
+              )
+            })
+            icon.shipInfo = ship
+            icon.setStyle(unReactiveData.iconStyle)
+
+            return icon
+          })
+        })
+      })
+      unReactiveData.map.addLayer(unReactiveData.shipLayer)
     },
     bindEvent () {
-      this.map.on('click', evt => {
-        let feature = this.map.forEachFeatureAtPixel(evt.pixel, feature => {
+      unReactiveData.map.on('click', evt => {
+        let feature = unReactiveData.map.forEachFeatureAtPixel(evt.pixel, feature => {
           console.log(feature)
           var coordinates = feature.getGeometry().getCoordinates();
           if (feature.shipInfo) {
+            this.focusShip(feature.shipInfo)
             this.showShipInfo(feature.shipInfo)
-            this.showGuiji(feature.shipInfo)
+            this.showTrail(feature.shipInfo)
           } else {
-            this.closeShipInfo()
           }
-          this.map.updateSize()
+          unReactiveData.map.updateSize()
         })
-        // console.log(feature)
       })
     },
-    showGuiji (shipInfo) {
+    // 显示船的轨迹
+    showTrail (shipInfo) {
+      this.hideTrail()
       this
         .$http
         .post('/shipStatus/shipStatusListByShipId', {
-          shipId: 8 || shipInfo.shipId,
-          beginTime: 1528990021,
-          endTime: 1528992106
+          mmsiNum: shipInfo.shipMmsi,
+          beginTime: 1535299200,
+          endTime: 1535472000
         })
-        .then(responseData => {
-          if (Array.isArray(responseData.data)) {
-            let points = responseData.data.map(point => {
+        .then(response => {
+          // console.log(response)
+          if (response.code == '0' && Array.isArray(response.data)) {
+            this.drawTrail(response.data.map(point => {
               return proj.fromLonLat([
                 point.longitude,
                 point.latitude
               ])
-            })
-            let layer = new Vector({
-              source: new SourceVector({
-                features: [
-                  new Feature(new LineString(points))
-                ]
-              })
-            })
-            this.map.addLayer(layer)
-            this.map.updateSize()
-          } 
-          // todo
-          // let points="-90 90,90 -90,100 50,150 80.66666"
-          let points = [ [-89.8802, 32.5804], [25.4286, 46.9235] ].map(v => proj.fromLonLat(v))
-          // console.log([0, radius], [run, -rise], [-run, -rise], [0, radius])
-          const triangle = new LineString(points);
-          let layer = new Vector({
-            source: new SourceVector({
-              features: [
-                new Feature(triangle)
-              ]
-            })
-          })
-          this.map.addLayer(layer)
+            }))
+          }
         })
+    },
+    hideTrail () {
+      if (unReactiveData.trailLayer) {
+        unReactiveData.map.removeLayer(unReactiveData.trailLayer)
+      }
+    },
+    drawTrail (pointsArray) {
+      unReactiveData.trailLayer = new VectorLayer({
+        source: new VectorSource({
+          features: [
+            new Feature(new LineString(pointsArray))
+          ]
+        })
+      })
+      unReactiveData.map.addLayer(unReactiveData.trailLayer)
+      unReactiveData.map.updateSize()
     },
     showShipInfo (shipInfo) {
       // 点击之后显示船信息
@@ -202,48 +265,26 @@ export default {
       this.dialog.name = ''
       this.dialog.region = ''
     },
-    getShoals () {
+    getShip (query) {
       return this
         .$http
-        .post('/ship/shipList', {})
+        .post('/ship/shipList', query)
     },
-    formatShoals (shoals) {
-      return Promise.resolve(shoals.map(v => {
-        return {
-          mmsiNum: v.shipMmsi,
-          type: v.shipType
-        }
-      }))
-    },
-    getShipStatusList (list, duration = {}) {
-      let beginTime, endTime
-      return this
-          .$http
-          .post('/shipStatus/shipStatusList', {
-            shipStatusList: list,
-            beginTime: 1528992021,
-            endTime: 1528992106
-          })
-    },
-    formatShipStatusList (list) {
-      return Promise.resolve(list.filter(v => v.shipStatusInfo))
-    },
-    drawShip (ships) {
-      let source = new SourceVector({
-        features: ships.map(ship => {
-          let icon = new Feature({
-            geometry: new Point(proj.fromLonLat([ship.shipStatusInfo.longitude, ship.shipStatusInfo.latitude]))
-          })
-          icon.shipInfo = ship.shipStatusInfo
-          icon.setStyle(this.iconStyle)
-          return icon
+    // 聚焦到小船身上
+    focusShip (shipInfo) {
+      unReactiveData
+        .map
+        .getView()
+        .animate({
+          center: proj.fromLonLat([
+            shipInfo.longitude,
+            shipInfo.latitude
+          ]),
+          duration: 1000,
+          zoom: 9
         })
-      })
-      let layer = new Vector({
-        source
-      })
-      this.map.addLayer(layer)
     },
+    // 移动地图
     moveMap (direction) {
       const MAX_LON = 180
       const MIN_LON = -180
@@ -282,7 +323,11 @@ export default {
         default:
           break
       }
-      this.map.getView().setCenter(proj.fromLonLat(this.mapPos))
+      unReactiveData.map.getView().setCenter(proj.fromLonLat(this.mapPos))
+    },
+    // 全局的时间变化
+    globalTimeChange (times) {
+      console.log(times)
     }
   }
 }

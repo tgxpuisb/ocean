@@ -21,6 +21,7 @@ const TileWMS = ol.source.TileWMS
 const View = ol.View
 const ImageLayer = ol.layer.Image
 const ImageWMS = ol.source.ImageWMS
+const Graticule = ol.Graticule
 
 import TimeBar from '@/components/TimeBar'
 
@@ -94,7 +95,7 @@ export default {
 			layers: [
 				new Tile({
 					source: new OSM({
-						// wrapX: false
+						wrapX: false
 					})
 				})
 			],
@@ -111,43 +112,14 @@ export default {
 		unReactiveData.map.on('movestart', (data) => {
 			// console.log(data)
 		})
-		/*
-		this.map.addLayer(new Tile({
-			source: new TileWMS({
-				url: '/geo/cite/wms?service=WMS&version=1.1.0&request=GetMap&layers=cite:sst&styles=&srs=EPSG:4326&format=application%2Fopenlayers2',
-				params: {
-					LAYERS:'cite:sst',
-					STYLES:'nc_sst',
-					TILED:true
-				},
-				serverType: 'geoserver',
-				// wrapX: false
-			})
-		}))
-		*/
-		// this.map.addLayer(new ImageLayer({
-		// 	source: new ImageWMS({
-		// 		url: '/geo/cite/wms?service=WMS&version=1.1.0&request=GetMap&layers=cite:sst&styles=&bbox=-179.99999694739424,-79.99999694633365,179.99999694739424,79.99999694633365&width=768&height=341&srs=EPSG:4326&format=application%2Fopenlayers2',
-		// 		params:{    
-    //     	LAYERS: 'cite:sst',
-		// 			STYLES: 'nc_sst',
-    //     	TILED: true
-		// 		},
-		// 		serverType:'geoserver',
-		// 		ratio: 1
-		// 	})
-		// }))
-		// this.map.addLayer()
-		// axios.get('/json/out.json').then(res => {
-		// 	if (res.data) {
-		// 		let wind = new WindLayer(res.data, {
-		// 			projection: 'EPSG:3857',
-		// 			ratio: 1
-		// 		})
-		// 		wind.appendTo(this.map)
-		// 	}
-		// })
+		var graticule = new Graticule({
+			// the style to use for the lines, optional.
+			map: unReactiveData.map
+			// showLabels: true
+		})
+		console.log(graticule)
 		axios.get('/json/oil/data-2018-8-1.json').then(res => {
+			console.log(res)
 			// if (res.data) {
 			// 	let wind = new WindLayer(res.data, {
 			// 		projection: 'EPSG:3857',

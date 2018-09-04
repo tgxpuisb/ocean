@@ -33,6 +33,7 @@ const Feature = ol.Feature
 const Point = ol.geom.Point
 const proj = ol.proj
 const LineString = ol.geom.LineString
+const Graticule = ol.Graticule
 
 // http://openlayers.org/en/latest/examples/icon-color.html
 const unReactiveData = {
@@ -58,7 +59,9 @@ export default {
       unReactiveData.map = new Map({
         layers: [
           new Tile({
-            source: new OSM()
+            source: new OSM({
+              wrapX: false
+            })
           })
         ],
         target: 'map',
@@ -67,6 +70,10 @@ export default {
           zoom: 2.4,
           minZoom: 2.4
         })
+      })
+      var graticule = new Graticule({
+        map: unReactiveData.map
+        // showLabels: true
       })
     },
     initIconStyle () {
@@ -106,7 +113,23 @@ export default {
         })
       })
 
-      unReactiveData.map.addLayer(unReactiveData.shoalsLayer)
+      // unReactiveData.map.addLayer(unReactiveData.shoalsLayer)
+
+
+      this.$http.get('/json/oil/data-2018-8-1.json', {
+        baseURL: ''
+      }).then(data => {
+        const GeoJSON = ol.format.GeoJSON
+        const Heatmap = ol.layer.Heatmap
+        unReactiveData.map.addLayer(new Heatmap({
+          source: new SourceVector({
+            features: new GeoJSON().readFeatures(data)
+          })
+        }))
+        console.log(data)
+      })
+
+
     },
     // 全局的时间变化
     globalTimeChange (times) {

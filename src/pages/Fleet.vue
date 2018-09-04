@@ -73,6 +73,7 @@ const proj = ol.proj
 const Overlay = ol.Overlay
 const ZoomSlider = ol.control.ZoomSlider
 const LineString = ol.geom.LineString
+const Graticule = ol.Graticule
 
 // import Style from 'ol/style/style'
 // import Icon from 'ol/style/icon'
@@ -138,7 +139,9 @@ export default {
       unReactiveData.map = new Map({
         layers: [
           new Tile({
-            source: new OSM(),
+            source: new OSM({
+              wrapX: false
+            }),
           })
         ],
         target: 'map',
@@ -147,6 +150,11 @@ export default {
           zoom: 2.4,
           minZoom: 2.4,
         })
+      })
+      var graticule = new Graticule({
+        // the style to use for the lines, optional.
+        map: unReactiveData.map
+        // showLabels: true
       })
       // 设置小船的样子
       unReactiveData.iconStyle = new Style({

@@ -60,7 +60,7 @@ export default {
         layers: [
           new Tile({
             source: new OSM({
-              wrapX: false
+              // wrapX: false
             })
           })
         ],
@@ -116,14 +116,17 @@ export default {
       // unReactiveData.map.addLayer(unReactiveData.shoalsLayer)
 
 
-      this.$http.get('/json/oil/data-2018-8-1.json', {
+      this.$http.get('/json/fish/fish-2018-8-1.json', {
         baseURL: ''
       }).then(data => {
         const GeoJSON = ol.format.GeoJSON
         const Heatmap = ol.layer.Heatmap
         unReactiveData.map.addLayer(new Heatmap({
           source: new SourceVector({
-            features: new GeoJSON().readFeatures(data)
+            features: new GeoJSON().readFeatures(data, {
+              dataProjection : 'EPSG:4326',
+              featureProjection : 'EPSG:3857'
+            })
           })
         }))
         console.log(data)

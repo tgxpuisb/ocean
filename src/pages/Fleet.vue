@@ -140,7 +140,7 @@ export default {
         layers: [
           new Tile({
             source: new OSM({
-              wrapX: false
+              // wrapX: false
             }),
           })
         ],

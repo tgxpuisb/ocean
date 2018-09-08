@@ -1,15 +1,50 @@
 <template>
-	<div class="map-container">
-		<div id="map" class="map"></div>
-		<TimeBar :time="time" class="time-bar" @on-time-change="timeChange"/>
-		<div class="platform">
-			<ul>
-				<li v-for="(icon, index) in icons" :key="index">
-					<img :src="icon.url" :title="icon.title" @click="handleLayer(icon.type, index)" :class="{ active: icon.isShow }">
-				</li>
-			</ul>
-		</div>
-	</div>
+    <div class="map-container">
+      <div id="map" class="map"></div>
+      <TimeBar :time="time" class="time-bar" @on-time-change="timeChange"/>
+      <div class="platform">
+        <ul>
+          <li v-for="(icon, index) in icons" :key="index">
+            <img :src="icon.url" :title="icon.title" @click="handleLayer(icon.type, index)" :class="{ active: icon.isShow }">
+          </li>
+        </ul>
+      </div>
+
+      <el-row class="more-btn">
+        <el-button type="primary" icon="el-icon-d-arrow-left" v-if="isShow" circle @click="doOpen()"></el-button>
+      </el-row>
+      <div class="look-more" v-if="isMore">
+        <el-button round size="mini" @click="doClose()" class="m-b">返回</el-button>
+        <div class="m-t">
+          <el-button type="primary" icon="el-icon-edit" circle class="m-l-0"></el-button>
+          <p>冰层覆盖率</p>
+        </div>
+        <div class="m-t">
+          <el-button type="primary" icon="el-icon-edit" circle class="m-l-0"></el-button>
+          <p>海底矿物分布</p>
+        </div>
+        <div class="m-t">
+          <el-button type="primary" icon="el-icon-edit" circle class="m-l-0"></el-button>
+          <p>位势高度</p>
+        </div>
+        <div class="m-t">
+          <el-button type="primary" icon="el-icon-edit" circle class="m-l-0"></el-button>
+          <p>洋面风压</p>
+        </div>
+        <div class="m-t">
+          <el-button type="primary" icon="el-icon-edit" circle class="m-l-0"></el-button>
+          <p>水温分布</p>
+        </div>
+        <div class="m-t">
+          <el-button type="primary" icon="el-icon-edit" circle class="m-l-0"></el-button>
+          <p>原油泄漏轨迹预测</p>
+        </div>
+        <div class="m-t">
+          <el-button type="primary" icon="el-icon-edit" circle class="m-l-0"></el-button>
+          <p>智能鱼群预测</p>
+        </div>
+      </div>
+    </div>
 </template>
 
 <script>
@@ -43,6 +78,14 @@ export default {
 	data () {
 		return {
 			msg: '',
+			isShow: true,
+			isMore: false,
+			form: {
+			  address: false,
+			  satelliteMap: false,
+			  ranging: false,
+			  point: false
+			},
 			time: Date.now(),
 			icons: [
 				{
@@ -101,24 +144,21 @@ export default {
 			target: 'map',
 			view: new View({
 				center: [0, 0],
-				zoom: 2.8,
-				minZoom: 2.8,
+				zoom: 3,
+				minZoom: 3,
 				projection:'EPSG:3857',
 				// extent: [extent[0] * 2, extent[1] / 6, extent[2] * 2, extent[3] / 5]
 			}),
 			loadTilesWhileAnimating: true
 		})
 		unReactiveData.map.on('movestart', (data) => {
-			// console.log(data)
 		})
 		var graticule = new Graticule({
 			// the style to use for the lines, optional.
 			map: unReactiveData.map
 			// showLabels: true
 		})
-		console.log(graticule)
 		// axios.get('/json/oil/data-2018-8-1.json').then(res => {
-		// 	console.log(res)
 		// 	// if (res.data) {
 		// 	// 	let wind = new WindLayer(res.data, {
 		// 	// 		projection: 'EPSG:3857',
@@ -127,7 +167,7 @@ export default {
 		// 	// 	wind.appendTo(unReactiveData.map)
 		// 	// }
 		// })
-	
+
 		let layer = this.createTileLayer({
 			url: 'http://116.62.237.253:8080/geo/wind/wms?service=WMS&version=1.1.0&request=GetMap&layers=wind:windField&styles=yangliu&bbox=-180.25,-90.25000762939453,179.75,90.24999237060547&width=768&height=385&srs=EPSG:4326&format=application/openlayers'
 		})
@@ -135,6 +175,17 @@ export default {
 		unReactiveData.map.addLayer(layer)
 	},
 	methods: {
+	  //查看更多
+	  doOpen() {
+	    console.log(1);
+	    this.isShow = false;
+	    this.isMore = true;
+	  },
+	  doClose() {
+	    this.isShow = true;
+      this.isMore = false;
+	  },
+
 		timeChange (time) {
 			console.log(time)
 		},

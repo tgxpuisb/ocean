@@ -1,6 +1,25 @@
 <template>
-  <div class="map-container">
-    <div id="map" class="map"></div>
+  <div>
+    <div class="btn-control">
+      <el-form ref="form" :model="form" label-width="80px" inline>
+        <el-form-item label="经纬度" class="m-b-0">
+            <el-switch v-model="form.address"></el-switch>
+          </el-form-item>
+        <el-form-item label="卫星地图" class="m-b-0">
+          <el-switch v-model="form.satelliteMap"></el-switch>
+        </el-form-item>
+        <el-form-item label="测距" class="m-b-0">
+          <el-switch v-model="form.ranging"></el-switch>
+        </el-form-item>
+        <el-form-item label="取点" class="m-b-0">
+          <el-switch v-model="form.point"></el-switch>
+        </el-form-item>
+      </el-form>
+    </div>
+
+    <div class="map-container">
+      <div id="map" class="map"></div>
+    </div>
   </div>
 </template>
 
@@ -46,6 +65,12 @@ const unReactiveData = {
 export default {
 	data () {
 		return {
+		  form: {
+        address: false,
+        satelliteMap: false,
+        ranging: false,
+        point: false
+      },
 		}
 	},
 	mounted () {
@@ -67,8 +92,8 @@ export default {
         target: 'map',
         view: new View({
           center: [0, 0],
-          zoom: 2.4,
-          minZoom: 2.4
+          zoom: 2.8,
+          minZoom: 2.8
         })
       })
       var graticule = new Graticule({

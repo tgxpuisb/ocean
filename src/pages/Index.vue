@@ -1,41 +1,31 @@
 <template>
   <el-container class="h-full">
     <el-header class="banner-header">
-      海洋渔业生产卫星综合应用服务系统
-      <el-date-picker
-          class="header-date-picker"
-          v-model="time"
-          type="datetimerange"
-          range-separator="至"
-          start-placeholder="开始日期"
-          end-placeholder="结束日期"
-          :editable="false"
-          align="right"
-          @change="timeChange">
-        </el-date-picker>
+      <h3 class="banner-title">海洋渔业生产卫星综合应用服务系统</h3>
+      <el-menu
+        :router="true"
+        mode="horizontal"
+        background-color="#409eff"
+        text-color="#fff"
+        class="banner-box"
+        active-text-color="#ffd04b"
+        :default-active="$route.name">
+        <el-menu-item index="Ocean" :route="{path: '/ocean'}">
+          <!--<i class="el-icon-document"></i>-->
+          <span slot="title">海洋情况</span>
+        </el-menu-item>
+        <el-menu-item index="Fleet" :route="{path: '/fleet'}">
+          <!--<i class="el-icon-setting"></i>-->
+          <span slot="title">舰队信息展示</span>
+        </el-menu-item>
+        <!--<el-menu-item index="Shoals" :route="{path: '/shoals'}">
+          <i class="el-icon-document"></i>
+          <span slot="title">智能鱼群预测</span>
+        </el-menu-item>-->
+      </el-menu>
     </el-header>
     <el-container>
-      <el-aside class="app-aside-left">
-        <el-menu
-          :router="true"
-          :default-active="$route.name">
-          <el-menu-item index="Ocean" :route="{path: '/ocean'}">
-            <i class="el-icon-document"></i>
-            <span slot="title">海洋情况</span>
-          </el-menu-item>
-          <el-menu-item index="Fleet" :route="{path: '/fleet'}">
-            <i class="el-icon-setting"></i>
-            <span slot="title">舰队信息展示</span>
-          </el-menu-item>
-          <el-menu-item index="Shoals" :route="{path: '/shoals'}">
-            <i class="el-icon-document"></i>
-            <span slot="title">智能鱼群预测</span>
-          </el-menu-item>
-        </el-menu>
-      </el-aside>
-      <el-container>
-        <router-view class="map-container" ref="route"/>
-      </el-container>
+      <router-view ref="route"/>
     </el-container>
   </el-container>
 </template>
@@ -74,12 +64,19 @@ export default {
     align-self: stretch;
     width: 200px !important;
   }
+  .banner-title{
+    line-height: 60px;
+    float: left;
+    margin: 0 5em 0 2em;
+  }
   .banner-header {
-    color: #2d5979;
-    background-color: #54cbfb;
-    line-height: 40px;
-    height: 40px !important;
     font-size: 18px;
+    padding:0;
+    color:#fff;
+    background-color:#409eff;
+  }
+  .banner-box{
+    float:left;
   }
   .el-menu-item {
     color: #FFFFFF;
@@ -101,7 +98,49 @@ export default {
   }
   .map-container {
     position: relative;
-    width: 100%;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    position: relative;
+  }
+  .ol-overlaycontainer-stopevent{
+    display:none;
+  }
+  .btn-control{
+    background-color:#e6effb;
+    border-bottom:1px solid #b9b9b9;
+    padding:10px 20px;
+  }
+  .m-b-0{
+    margin-bottom:0;
+  }
+  .m-l-0{
+    margin-left:0 !important;
+  }
+  .m-t{
+    margin-top:20px;
+  }
+  .m-b{
+    margin-bottom: 10px;
+  }
+  .more-btn{
+    position:absolute;
+    right: 0.5em;
+    top: 50%;
+  }
+  .look-more{
+    position:absolute;
+    right: 0;
+    top: 0;
+    bottom:0;
+    background-color: rgba(255, 255, 255, 0.5);
+    width: 120px;
+    text-align:center;
+    padding:15px 0;
+    p{
+      font-size:12px;
+      padding-top:5px;
+    }
   }
   .header-date-picker {
     float: right;

@@ -1,52 +1,55 @@
 <template>
-  <div class="map-container">
-    <div id="map" class="map">
+  <div>
+
+    <div class="map-container">
+      <div id="map" class="map">
+      </div>
+      <!--<div class="position-control ol-control">
+        <button class="top" @click="moveMap('top')">↑</button>
+        <button class="bottom" @click="moveMap('bottom')">↓</button>
+        <button class="right" @click="moveMap('right')">→</button>
+        <button class="left" @click="moveMap('left')">←</button>
+      </div>-->
+      <el-form label-width="80px" ref="form" :model="shipSearch" class="search-form" size="mini">
+        <el-form-item label="国家地区">
+          <el-select v-model="shipSearch.nation" placeholder="请选择国家地区">
+            <el-option label="区域一" value="shanghai"></el-option>
+            <el-option label="区域二" value="beijing"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="船只类型">
+          <el-select v-model="shipSearch.type" placeholder="请选择船只类型">
+            <el-option label="区域一" value="shanghai"></el-option>
+            <el-option label="区域二" value="beijing"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="船只名称">
+          <el-select v-model="shipSearch.name" placeholder="请选择船只名称">
+            <el-option label="区域一" value="shanghai"></el-option>
+            <el-option label="区域二" value="beijing"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-row>
+          <el-col :span="19" :push="1">
+            <el-input placeholder="请输入船只名称搜索" size="mini"></el-input>
+          </el-col>
+          <el-col :span="2" :push="1">
+            <el-button type="primary" size="mini" icon="el-icon-search"></el-button>
+          </el-col>
+        </el-row>
+        <el-row class="hot-search">
+          <el-col :span="6">热门搜索</el-col>
+          <el-col :span="6" class="hot-search-result">xxx号</el-col>
+        </el-row>
+      </el-form>
+      <el-dialog
+        title="船只信息"
+        :visible.sync="dialog.visible"
+        width="30%">
+        <span>名称: {{ dialog.name }}</span><br><br>
+        <span>地区: {{ dialog.region}}</span>
+      </el-dialog>
     </div>
-    <div class="position-control ol-control">
-      <button class="top" @click="moveMap('top')">↑</button>
-      <button class="bottom" @click="moveMap('bottom')">↓</button>
-      <button class="right" @click="moveMap('right')">→</button>
-      <button class="left" @click="moveMap('left')">←</button>
-    </div>
-    <el-form label-width="80px" ref="form" :model="shipSearch" class="search-form" size="mini">
-      <el-form-item label="国家地区">
-        <el-select v-model="shipSearch.nation" placeholder="请选择国家地区">
-          <el-option label="区域一" value="shanghai"></el-option>
-          <el-option label="区域二" value="beijing"></el-option>
-        </el-select>
-      </el-form-item>
-      <el-form-item label="船只类型">
-        <el-select v-model="shipSearch.type" placeholder="请选择船只类型">
-          <el-option label="区域一" value="shanghai"></el-option>
-          <el-option label="区域二" value="beijing"></el-option>
-        </el-select>
-      </el-form-item>
-      <el-form-item label="船只名称">
-        <el-select v-model="shipSearch.name" placeholder="请选择船只名称">
-          <el-option label="区域一" value="shanghai"></el-option>
-          <el-option label="区域二" value="beijing"></el-option>
-        </el-select>
-      </el-form-item>
-      <el-row>
-        <el-col :span="19" :push="1">
-          <el-input placeholder="请输入船只名称搜索" size="mini"></el-input>
-        </el-col>
-        <el-col :span="2" :push="1">
-          <el-button type="primary" size="mini" icon="el-icon-search"></el-button>
-        </el-col>
-      </el-row>
-      <el-row class="hot-search">
-        <el-col :span="6">热门搜索</el-col>
-        <el-col :span="6" class="hot-search-result">xxx号</el-col>
-      </el-row>
-    </el-form>
-    <el-dialog
-      title="船只信息"
-      :visible.sync="dialog.visible"
-      width="30%">
-      <span>名称: {{ dialog.name }}</span><br><br>
-      <span>地区: {{ dialog.region}}</span>
-    </el-dialog>
   </div>
 </template>
 
@@ -100,6 +103,12 @@ export default {
 
       }, // 小船的查询数据
 			msg: '',
+			form: {
+        address: false,
+        satelliteMap: false,
+        ranging: false,
+        point: false
+      },
       mapPos: [115, 0],
       shipSearch: {
         nation: '',
@@ -405,8 +414,8 @@ export default {
     border-radius: 4px;
     background: #FFF;
     position: absolute;
-    top: .5em;
-    right: .5em;
+    top: 1em;
+    left: 1em;
   }
   .hot-search {
     padding-left: 4px;

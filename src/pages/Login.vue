@@ -1,5 +1,6 @@
 <template>
 <div id="login-body">
+  <img src="static/title.png" class="login-title" alt="海洋渔业生产卫星综合应用服务系统"/>
   <el-form :model="form" label-width="80px" :rules="rules" class="login-container" ref="login">
     <el-form-item label="账号:" prop="loginName">
       <el-input v-model="form.loginName" placeholder="请输入账号"></el-input>
@@ -62,7 +63,7 @@ export default {
   .login-container {
     position: absolute;
     top: 50%;
-    left: 70%;
+    left: 67%;
     transform: translate(-50%, -50%);
     width: 320px;
     background: rgba(255, 255, 255, 0.4);
@@ -76,5 +77,12 @@ export default {
   #login-body {
     background: #2c6aa7 url('/static/pic.jpg') no-repeat center center;
     width: 100%;
+  }
+  .login-title{
+    width:600px;
+    position:absolute;
+    top:14%;
+    left:34%;
+    z-index:5;
   }
 </style>

@@ -349,7 +349,6 @@ export default {
   }
 	.map {
     width: 100%;
-    height: 600px;
     position: relative;
   }
   .ship-info {
@@ -370,7 +369,7 @@ export default {
   .ol-attribution {
     display: none;
   }
-  .position-control { 
+  .position-control {
     width: 4.5em;
     height: 4.5em;
     background: rgba(255, 255, 255, 0.6);

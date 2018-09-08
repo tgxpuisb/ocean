@@ -10,7 +10,6 @@
 			</ul>
 		</div>
 	</div>
-  
 </template>
 
 <script>
@@ -102,8 +101,8 @@ export default {
 			target: 'map',
 			view: new View({
 				center: [0, 0],
-				zoom: 2.4,
-				minZoom: 2.4,
+				zoom: 2.8,
+				minZoom: 2.8,
 				projection:'EPSG:3857',
 				// extent: [extent[0] * 2, extent[1] / 6, extent[2] * 2, extent[3] / 5]
 			}),
@@ -211,6 +210,7 @@ export default {
 <style lang="less">
 	.map {
 		width: 100%;
+		height:100%;
 	}
 	.time-bar {
 		position: absolute;

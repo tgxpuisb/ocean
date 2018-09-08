@@ -1,6 +1,7 @@
 <template>
-  <el-container>
-    <el-header class="banner-header">海洋渔业生产卫星综合应用服务系统
+  <el-container class="h-full">
+    <el-header class="banner-header">
+      海洋渔业生产卫星综合应用服务系统
       <el-date-picker
           class="header-date-picker"
           v-model="time"
@@ -17,8 +18,7 @@
       <el-aside class="app-aside-left">
         <el-menu
           :router="true"
-          :default-active="$route.name"
-        >
+          :default-active="$route.name">
           <el-menu-item index="Ocean" :route="{path: '/ocean'}">
             <i class="el-icon-document"></i>
             <span slot="title">海洋情况</span>
@@ -67,6 +67,9 @@ export default {
 </script>
 
 <style lang="less">
+  .h-full{
+    height:100%;
+  }
   .app-aside-left {
     align-self: stretch;
     width: 200px !important;

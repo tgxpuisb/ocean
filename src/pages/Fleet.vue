@@ -165,7 +165,7 @@ export default {
         })
       })
       // 添加控制器
-      unReactiveData.map.addControl(new ZoomSlider())
+      // unReactiveData.map.addControl(new ZoomSlider())
     },
     // 渲染小船们
     renderShip () {

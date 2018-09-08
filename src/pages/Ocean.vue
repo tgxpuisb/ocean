@@ -95,7 +95,7 @@ export default {
 			layers: [
 				new Tile({
 					source: new OSM({
-						// wrapX: false
+						wrapX: false
 					})
 				})
 			],
@@ -118,16 +118,22 @@ export default {
 			// showLabels: true
 		})
 		console.log(graticule)
-		axios.get('/json/oil/data-2018-8-1.json').then(res => {
-			console.log(res)
-			// if (res.data) {
-			// 	let wind = new WindLayer(res.data, {
-			// 		projection: 'EPSG:3857',
-			// 		ratio: 1
-			// 	})
-			// 	wind.appendTo(unReactiveData.map)
-			// }
+		// axios.get('/json/oil/data-2018-8-1.json').then(res => {
+		// 	console.log(res)
+		// 	// if (res.data) {
+		// 	// 	let wind = new WindLayer(res.data, {
+		// 	// 		projection: 'EPSG:3857',
+		// 	// 		ratio: 1
+		// 	// 	})
+		// 	// 	wind.appendTo(unReactiveData.map)
+		// 	// }
+		// })
+	
+		let layer = this.createTileLayer({
+			url: 'http://116.62.237.253:8080/geo/wind/wms?service=WMS&version=1.1.0&request=GetMap&layers=wind:windField&styles=yangliu&bbox=-180.25,-90.25000762939453,179.75,90.24999237060547&width=768&height=385&srs=EPSG:4326&format=application/openlayers'
 		})
+		layer.setZIndex(unReactiveData.JSONLayerZIndex++)
+		unReactiveData.map.addLayer(layer)
 	},
 	methods: {
 		timeChange (time) {
@@ -181,6 +187,7 @@ export default {
 						TILED: true
 					},
 					serverType: 'geoserver',
+					wrapX: false
 				})
 			})
 		},

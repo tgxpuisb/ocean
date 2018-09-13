@@ -1,6 +1,4 @@
 <template>
-  <div>
-
     <div class="map-container">
       <div id="map" class="map">
       </div>
@@ -50,7 +48,6 @@
         <span>地区: {{ dialog.region}}</span>
       </el-dialog>
     </div>
-  </div>
 </template>
 
 <script>
@@ -149,15 +146,16 @@ export default {
         layers: [
           new Tile({
             source: new OSM({
-              // wrapX: false
+              wrapX: false
             }),
           })
         ],
         target: 'map',
         view: new View({
-          center: proj.fromLonLat(this.mapPos),
-          zoom: 2.4,
-          minZoom: 2.4,
+          center: [0, 0],
+          zoom: 3,
+          minZoom: 3,
+          projection:'EPSG:3857'
         })
       })
       var graticule = new Graticule({
@@ -352,13 +350,14 @@ export default {
 </script>
 
 <style lang="less" scope>
-  .map-container {
+  /*.map-container {
     position: relative;
     width: 100%;
-  }
+  }*/
 	.map {
     width: 100%;
-    position: relative;
+    height:100%;
+    //position: relative;
   }
   .ship-info {
     padding: 12px;
@@ -415,7 +414,7 @@ export default {
     background: #FFF;
     position: absolute;
     top: 1em;
-    left: 1em;
+    right: 1em;
   }
   .hot-search {
     padding-left: 4px;

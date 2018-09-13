@@ -7,12 +7,12 @@
             <span>测距</span>
         </div>
         <div class="trafficopt">
-            <img src="/static/box2.png" style="vertical-align: text-bottom;" />
-            <span>比例尺</span>
+            <img src="/static/box4.png" style="vertical-align: text-bottom;" />
+            <span>卫星地图</span>
         </div>
         <div class="trafficopt">
             <img src="/static/box3.png" style="vertical-align: text-bottom;" />
-            <span>标注</span>
+            <span>取点</span>
         </div>
         <div class="trafficopt" @click="toggleGrid">
             <img src="/static/box5.png" style="vertical-align: text-bottom;" />
@@ -223,7 +223,7 @@ export default {
 		})
 		unReactiveData.map.on('movestart', (data) => {
 		})
-		
+
 		// axios.get('/json/oil/data-2018-8-1.json').then(res => {
 		// 	// if (res.data) {
 		// 	// 	let wind = new WindLayer(res.data, {
@@ -234,7 +234,7 @@ export default {
 		// 	// }
 		// })
 
-		
+
 	},
 	methods: {
 	  //查看更多

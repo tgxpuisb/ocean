@@ -3,7 +3,20 @@
       <div id="map" class="map"></div>
       <div class="switch-box">
         <div class="trafficopt">
-            <span class="last traffic"></span>路况
+            <img src="/static/box1.png" style="vertical-align: text-bottom;"/>
+            <span>测距</span>
+        </div>
+        <div class="trafficopt">
+            <img src="/static/box2.png" style="vertical-align: text-bottom;" />
+            <span>比例尺</span>
+        </div>
+        <div class="trafficopt">
+            <img src="/static/box3.png" style="vertical-align: text-bottom;" />
+            <span>标注</span>
+        </div>
+        <div class="trafficopt" @click="toggleGrid">
+            <img src="/static/box5.png" style="vertical-align: text-bottom;" />
+            <span>网格</span>
         </div>
       </div>
       <TimeBar :time="time" class="time-bar" @on-time-change="timeChange"/>
@@ -12,11 +25,11 @@
           <li v-for="(icon, index) in icons" :key="index">
 						<el-tooltip class="item" effect="dark" :content="icon.title" placement="top">
 							<button
-								class="el-button m-l-0 el-button--default is-circle"
+								class="el-button m-l-0 el-button--primary is-circle"
 								@click="handleLayer(icon.type, index)"
 								:class="{ active: icon.isShow }"
 							>
-								<span class="custom-icon mine"></span>
+								<span class="custom-icon" :class="icon.url"></span>
 							</button>
 						</el-tooltip>
           </li>
@@ -68,7 +81,8 @@ const unReactiveData = {
 	sshLayer: null,
 	sshaLayer: null,
 	sfLayer: null,
-	JSONLayerZIndex: 1000
+	JSONLayerZIndex: 1000,
+	graticule: null
 }
 
 const Layers = {
@@ -94,49 +108,49 @@ export default {
 				{
 				  title:'叶绿素',
           type:'chla',
-					url: '/static/icon1.png',
+					url: 'chla',
 					layer: 'tile',
           isShow: false,
 				},
 				{
           title:'大气数据',
           type:'gfs',
-					url: '/static/icon2.png',
+					url: 'gfs',
 					layer: 'wind',
           isShow: false,
 				},
 				{
 				  title:'表温',
           type:'sst',
-					url: '/static/icon3.png',
+					url: 'sst',
 					layer: 'tile',
           isShow: false,
 				},
 				{
 				  title:'表温距平值',
           type:'ssta',
-					url: '/static/icon4.png',
+					url: 'ssta',
 					layer: 'tile',
 					isShow: false
 				},
 				{
           title:'海平面高度',
           type:'ssh',
-					url: '/static/icon5.png',
+					url: 'ssh',
 					layer: 'tile',
           isShow: false,
 				},
 				{
           title:'海平面距平值',
           type:'ssha',
-					url: '/static/icon6.png',
+					url: 'ssha',
 					layer: 'tile',
           isShow: false,
 				},
 				{
           title:'盐度',
           type:'sf',
-					url: '/static/icon7.png',
+					url: 'sf',
 					layer: 'tile',
           isShow: false,
 				}
@@ -203,18 +217,13 @@ export default {
 				center: [0, 0],
 				zoom: 3,
 				minZoom: 3,
-				projection:'EPSG:3857',
+				// projection:'EPSG:3857',
 				// extent: [extent[0] * 2, extent[1] / 6, extent[2] * 2, extent[3] / 5]
 			}),
-			loadTilesWhileAnimating: true
 		})
 		unReactiveData.map.on('movestart', (data) => {
 		})
-		var graticule = new Graticule({
-			// the style to use for the lines, optional.
-			map: unReactiveData.map
-			// showLabels: true
-		})
+		
 		// axios.get('/json/oil/data-2018-8-1.json').then(res => {
 		// 	// if (res.data) {
 		// 	// 	let wind = new WindLayer(res.data, {
@@ -241,6 +250,24 @@ export default {
 
 		timeChange (time) {
 			console.log(time)
+		},
+
+		toggleGrid () {
+			if (this.hasGraticule) {
+				this.hasGraticule = false
+				unReactiveData.graticule.setMap(null)
+			} else {
+				this.hasGraticule = true
+				unReactiveData.graticule = new Graticule({
+					showLabels: true
+				})
+				unReactiveData.graticule.setMap(unReactiveData.map)
+			}
+			// var graticule = new Graticule({
+			// 	// the style to use for the lines, optional.
+			// 	map: unReactiveData.map
+			// 	// showLabels: true
+			// })
 		},
 
 		// 风layer
@@ -353,7 +380,7 @@ export default {
 	}
 	.time-bar {
 		position: absolute;
-		bottom: 48px;
+		bottom: 4em;
 		left: 50%;
 		transform: translateX(-50%);
 	}
@@ -368,12 +395,18 @@ export default {
     border-radius: 0 2px 2px 0;
     box-shadow: 1px 2px 1px rgba(0,0,0,.15);
     .trafficopt {
-      padding-right: 12px;
+      padding-right: 15px;
       line-height: 34px;
       float: left;
       font-size:12px;
       display: inline-block;
       cursor: pointer;
+      &:last-child{
+        padding-right:0
+      }
+      &:hover{
+        color:rgb(64, 158, 255);
+      }
     }
     .traffic {
         float: left;
@@ -389,7 +422,7 @@ export default {
     bottom:0px;
     left:50%;
     transform: translateX(-50%);
-    background-color: rgba(0, 0, 0, 0.3);
+    background-color: rgba(0, 0, 0, 0.15);
     width:80%;
     padding:10px 0;
     border-radius:8px;
@@ -403,40 +436,6 @@ export default {
       height: 40px;
     }
 	}
-	/*.platform {
-		position: absolute;
-		bottom: 48px;
-		left: 50%;
-		transform: translateX(-50%);
-		width: 80%;
-		height:0;
-		border-width:0 5px 20px 5px;
-		border-style:none solid solid;
-		border-color:transparent transparent rgba(0, 0, 0, 0.3);
-		> ul {
-			width: 100%;
-			position: absolute;
-			top: -24px;
-			display: flex;
-			justify-content: space-around;
-		}
-		li {
-			width: 40px;
-			height: 40px;
-		}
-		img {
-			width: 100%;
-			height: 100%;
-			display: block;
-			transform-origin: center center;
-		}
-		.active {
-			transform: scale(1.3);
-		}
-		img:hover {
-			transform: scale(1.3);
-		}
-	}*/
 
 	// 自定义图标
 	.custom-icon {
@@ -464,5 +463,26 @@ export default {
 		&.shoal {
 			background-image: url("/static/shoal.png");
 		}
+		&.sf {
+      background-image: url("/static/icon7.png");
+    }
+    &.gfs {
+      background-image: url("/static/icon1.png");
+    }
+    &.ssh {
+      background-image: url("/static/icon2.png");
+    }
+    &.sst {
+      background-image: url("/static/icon3.png");
+    }
+    &.ssha {
+      background-image: url("/static/icon4.png");
+    }
+    &.ssta {
+      background-image: url("/static/icon5.png");
+    }
+    &.chla {
+      background-image: url("/static/icon6.png");
+    }
 	}
 </style>

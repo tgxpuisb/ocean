@@ -51,7 +51,6 @@ export default {
 <style>
   .button-group {
     padding: 10px 5px;
-    width: 80%;
     text-align: center;
     //background-color: rgba(0, 0, 0, 0.3);
   }

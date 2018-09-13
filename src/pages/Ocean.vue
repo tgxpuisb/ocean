@@ -3,7 +3,20 @@
       <div id="map" class="map"></div>
       <div class="switch-box">
         <div class="trafficopt">
-            <span class="last traffic"></span>路况
+            <img src="/static/box1.png" style="vertical-align: text-bottom;"/>
+            <span>测距</span>
+        </div>
+        <div class="trafficopt">
+            <img src="/static/box2.png" style="vertical-align: text-bottom;" />
+            <span>比例尺</span>
+        </div>
+        <div class="trafficopt">
+            <img src="/static/box3.png" style="vertical-align: text-bottom;" />
+            <span>标注</span>
+        </div>
+        <div class="trafficopt">
+            <img src="/static/box5.png" style="vertical-align: text-bottom;" />
+            <span>网格</span>
         </div>
       </div>
       <TimeBar :time="time" class="time-bar" @on-time-change="timeChange"/>
@@ -13,36 +26,36 @@
             <img :src="icon.url" :title="icon.title" @click="handleLayer(icon.type, index)" :class="{ active: icon.isShow }">
           </li>-->
           <li>
-            <button class="el-button m-l-0 el-button--default is-circle">
+            <button class="el-button m-l-0 el-button--primary is-circle">
               <span class="custom-icon mine"></span>
             </button>
           </li>
           <li>
-            <button class="el-button m-l-0 el-button--default is-circle">
+            <button class="el-button m-l-0 el-button--primary is-circle">
               <span class="custom-icon mine"></span>
             </button>
           </li>
           <li>
-            <button class="el-button m-l-0 el-button--default is-circle">
+            <button class="el-button m-l-0 el-button--primary is-circle">
               <span class="custom-icon mine"></span>
             </button>
           </li>
           <li>
-            <button class="el-button m-l-0 el-button--default is-circle">
+            <button class="el-button m-l-0 el-button--primary is-circle">
               <span class="custom-icon mine"></span>
             </button>
           </li>
           <li>
-            <button class="el-button m-l-0 el-button--default is-circle">
+            <button class="el-button m-l-0 el-button--primary is-circle">
               <span class="custom-icon mine"></span>
             </button>
           <li>
-            <button class="el-button m-l-0 el-button--default is-circle">
+            <button class="el-button m-l-0 el-button--primary is-circle">
               <span class="custom-icon mine"></span>
             </button>
           </li>
           <li>
-            <button class="el-button m-l-0 el-button--default is-circle">
+            <button class="el-button m-l-0 el-button--primary is-circle">
               <span class="custom-icon mine"></span>
             </button>
           </li>
@@ -329,7 +342,7 @@ export default {
 	}
 	.time-bar {
 		position: absolute;
-		bottom: 48px;
+		bottom: 4em;
 		left: 50%;
 		transform: translateX(-50%);
 	}
@@ -344,12 +357,18 @@ export default {
     border-radius: 0 2px 2px 0;
     box-shadow: 1px 2px 1px rgba(0,0,0,.15);
     .trafficopt {
-      padding-right: 12px;
+      padding-right: 15px;
       line-height: 34px;
       float: left;
       font-size:12px;
       display: inline-block;
       cursor: pointer;
+      &:last-child{
+        padding-right:0
+      }
+      &:hover{
+        color:rgb(64, 158, 255);
+      }
     }
     .traffic {
         float: left;
@@ -365,7 +384,7 @@ export default {
     bottom:0px;
     left:50%;
     transform: translateX(-50%);
-    background-color: rgba(0, 0, 0, 0.3);
+    background-color: rgba(0, 0, 0, 0.15);
     width:80%;
     padding:10px 0;
     border-radius:8px;
@@ -379,40 +398,6 @@ export default {
       height: 40px;
     }
 	}
-	/*.platform {
-		position: absolute;
-		bottom: 48px;
-		left: 50%;
-		transform: translateX(-50%);
-		width: 80%;
-		height:0;
-		border-width:0 5px 20px 5px;
-		border-style:none solid solid;
-		border-color:transparent transparent rgba(0, 0, 0, 0.3);
-		> ul {
-			width: 100%;
-			position: absolute;
-			top: -24px;
-			display: flex;
-			justify-content: space-around;
-		}
-		li {
-			width: 40px;
-			height: 40px;
-		}
-		img {
-			width: 100%;
-			height: 100%;
-			display: block;
-			transform-origin: center center;
-		}
-		.active {
-			transform: scale(1.3);
-		}
-		img:hover {
-			transform: scale(1.3);
-		}
-	}*/
 
 	// 自定义图标
 	.custom-icon {
@@ -440,5 +425,29 @@ export default {
 		&.shoal {
 			background-image: url("/static/shoal.png");
 		}
+		&.tree {
+      background-image: url("/static/icon7.png");
+    }
+    &.island {
+      background-image: url("/static/icon6.png");
+    }
+    &.votemt {
+      background-image: url("/static/icon1.png");
+    }
+    &.voheight {
+      background-image: url("/static/icon2.png");
+    }
+    &.vorule {
+      background-image: url("/static/icon3.png");
+    }
+    &.voice {
+      background-image: url("/static/icon4.png");
+    }
+    &.vollage {
+      background-image: url("/static/icon4.png");
+    }
+    &.vomine {
+      background-image: url("/static/icon5.png");
+    }
 	}
 </style>

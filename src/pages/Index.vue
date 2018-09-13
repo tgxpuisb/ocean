@@ -22,6 +22,13 @@
           <i class="el-icon-document"></i>
           <span slot="title">智能鱼群预测</span>
         </el-menu-item>-->
+        <el-submenu index="2" style="float: right;">
+          <template slot="title">
+            <i class="el-icon-setting" style="color:#fff;"></i>个人中心
+          </template>
+          <el-menu-item index="2-1">修改密码</el-menu-item>
+          <el-menu-item index="2-2">登出</el-menu-item>
+        </el-submenu>
       </el-menu>
     </el-header>
     <el-container>
@@ -66,7 +73,6 @@ export default {
   }
   .banner-title{
     line-height: 60px;
-    float: left;
     margin: 0 5em 0 2em;
   }
   .banner-header {
@@ -74,9 +80,11 @@ export default {
     padding:0;
     color:#fff;
     background-color:#409eff;
+    display: flex;
   }
   .banner-box{
-    float:left;
+    flex: 1;
+    // float:left;
   }
   .el-menu-item {
     color: #FFFFFF;

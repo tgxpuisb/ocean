@@ -16,31 +16,45 @@
       <div class="look-more" v-if="isMore">
         <el-button round size="mini" @click="doClose()" class="m-b">返回</el-button>
         <div class="m-t">
-          <el-button type="primary" icon="el-icon-edit" circle class="m-l-0"></el-button>
+					<button class="el-button m-l-0 el-button--default is-circle">
+						<span class="custom-icon ice"></span>
+					</button>
           <p>冰层覆盖率</p>
         </div>
         <div class="m-t">
-          <el-button type="primary" icon="el-icon-edit" circle class="m-l-0"></el-button>
+          <button class="el-button m-l-0 el-button--default is-circle">
+						<span class="custom-icon mine"></span>
+					</button>
           <p>海底矿物分布</p>
         </div>
         <div class="m-t">
-          <el-button type="primary" icon="el-icon-edit" circle class="m-l-0"></el-button>
+          <button class="el-button m-l-0 el-button--default is-circle">
+						<span class="custom-icon height"></span>
+					</button>
           <p>位势高度</p>
         </div>
         <div class="m-t">
-          <el-button type="primary" icon="el-icon-edit" circle class="m-l-0"></el-button>
+          <button class="el-button m-l-0 el-button--default is-circle">
+						<span class="custom-icon wind"></span>
+					</button>
           <p>洋面风压</p>
         </div>
         <div class="m-t">
-          <el-button type="primary" icon="el-icon-edit" circle class="m-l-0"></el-button>
+          <button class="el-button m-l-0 el-button--default is-circle">
+						<span class="custom-icon temp"></span>
+					</button>
           <p>水温分布</p>
         </div>
         <div class="m-t">
-          <el-button type="primary" icon="el-icon-edit" circle class="m-l-0"></el-button>
+          <button class="el-button m-l-0 el-button--default is-circle">
+						<span class="custom-icon oil"></span>
+					</button>
           <p>原油泄漏轨迹预测</p>
         </div>
         <div class="m-t">
-          <el-button type="primary" icon="el-icon-edit" circle class="m-l-0"></el-button>
+          <button class="el-button m-l-0 el-button--default is-circle">
+						<span class="custom-icon shoal"></span>
+					</button>
           <p>智能鱼群预测</p>
         </div>
       </div>
@@ -70,6 +84,10 @@ const unReactiveData = {
 	sshaLayer: null,
 	sfLayer: null,
 	JSONLayerZIndex: 1000
+}
+
+const Layers = {
+	
 }
 
 import axios from 'axios'
@@ -308,6 +326,34 @@ export default {
 		}
 		img:hover {
 			transform: scale(1.3);
+		}
+	}
+
+	// 自定义图标
+	.custom-icon {
+		display: block;
+		padding: 7px;
+		background-size: 14px 14px;
+		&.ice {
+			background-image: url("/static/ice.png");
+		}
+		&.oil {
+			background-image: url("/static/oil.png");
+		}
+		&.height {
+			background-image: url("/static/height.png");
+		}
+		&.temp {
+			background-image: url("/static/temp.png");
+		}
+		&.mine {
+			background-image: url("/static/mine.png");
+		}
+		&.wind {
+			background-image: url("/static/wind.png");
+		}
+		&.shoal {
+			background-image: url("/static/shoal.png");
 		}
 	}
 </style>

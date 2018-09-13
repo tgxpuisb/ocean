@@ -13,25 +13,38 @@
             <img :src="icon.url" :title="icon.title" @click="handleLayer(icon.type, index)" :class="{ active: icon.isShow }">
           </li>-->
           <li>
-            <el-button type="primary" icon="el-icon-edit" circle></el-button>
+            <button class="el-button m-l-0 el-button--default is-circle">
+              <span class="custom-icon mine"></span>
+            </button>
           </li>
           <li>
-            <el-button type="primary" icon="el-icon-edit" circle></el-button>
+            <button class="el-button m-l-0 el-button--default is-circle">
+              <span class="custom-icon mine"></span>
+            </button>
           </li>
           <li>
-            <el-button type="primary" icon="el-icon-edit" circle></el-button>
+            <button class="el-button m-l-0 el-button--default is-circle">
+              <span class="custom-icon mine"></span>
+            </button>
           </li>
           <li>
-            <el-button type="primary" icon="el-icon-edit" circle></el-button>
+            <button class="el-button m-l-0 el-button--default is-circle">
+              <span class="custom-icon mine"></span>
+            </button>
           </li>
           <li>
-            <el-button type="primary" icon="el-icon-edit" circle></el-button>
+            <button class="el-button m-l-0 el-button--default is-circle">
+              <span class="custom-icon mine"></span>
+            </button>
+          <li>
+            <button class="el-button m-l-0 el-button--default is-circle">
+              <span class="custom-icon mine"></span>
+            </button>
           </li>
           <li>
-            <el-button type="primary" icon="el-icon-edit" circle></el-button>
-          </li>
-          <li>
-            <el-button type="primary" icon="el-icon-edit" circle></el-button>
+            <button class="el-button m-l-0 el-button--default is-circle">
+              <span class="custom-icon mine"></span>
+            </button>
           </li>
         </ul>
       </div>

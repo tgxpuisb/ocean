@@ -9,42 +9,16 @@
       <TimeBar :time="time" class="time-bar" @on-time-change="timeChange"/>
       <div class="platform">
         <ul>
-          <!--<li v-for="(icon, index) in icons" :key="index">
-            <img :src="icon.url" :title="icon.title" @click="handleLayer(icon.type, index)" :class="{ active: icon.isShow }">
-          </li>-->
-          <li>
-            <button class="el-button m-l-0 el-button--default is-circle">
-              <span class="custom-icon mine"></span>
-            </button>
-          </li>
-          <li>
-            <button class="el-button m-l-0 el-button--default is-circle">
-              <span class="custom-icon mine"></span>
-            </button>
-          </li>
-          <li>
-            <button class="el-button m-l-0 el-button--default is-circle">
-              <span class="custom-icon mine"></span>
-            </button>
-          </li>
-          <li>
-            <button class="el-button m-l-0 el-button--default is-circle">
-              <span class="custom-icon mine"></span>
-            </button>
-          </li>
-          <li>
-            <button class="el-button m-l-0 el-button--default is-circle">
-              <span class="custom-icon mine"></span>
-            </button>
-          <li>
-            <button class="el-button m-l-0 el-button--default is-circle">
-              <span class="custom-icon mine"></span>
-            </button>
-          </li>
-          <li>
-            <button class="el-button m-l-0 el-button--default is-circle">
-              <span class="custom-icon mine"></span>
-            </button>
+          <li v-for="(icon, index) in icons" :key="index">
+						<el-tooltip class="item" effect="dark" :content="icon.title" placement="top">
+							<button
+								class="el-button m-l-0 el-button--default is-circle"
+								@click="handleLayer(icon.type, index)"
+								:class="{ active: icon.isShow }"
+							>
+								<span class="custom-icon mine"></span>
+							</button>
+						</el-tooltip>
           </li>
         </ul>
       </div>
@@ -54,47 +28,19 @@
       </el-row>
       <div class="look-more" v-if="isMore">
         <el-button round size="mini" @click="doClose()" class="m-b">返回</el-button>
-        <div class="m-t">
-					<button class="el-button m-l-0 el-button--default is-circle">
-						<span class="custom-icon ice"></span>
+        <div
+					class="m-t"
+					v-for="(icon, index) in iconsRight"
+					:key="index"
+				>
+					<button
+						class="el-button m-l-0 el-button--default is-circle"
+						@click="handleLayer(icon.type, index)"
+						:class="{ active: icon.isShow }"
+					>
+						<span class="custom-icon" :class="icon.url"></span>
 					</button>
-          <p>冰层覆盖率</p>
-        </div>
-        <div class="m-t">
-          <button class="el-button m-l-0 el-button--default is-circle">
-						<span class="custom-icon mine"></span>
-					</button>
-          <p>海底矿物分布</p>
-        </div>
-        <div class="m-t">
-          <button class="el-button m-l-0 el-button--default is-circle">
-						<span class="custom-icon height"></span>
-					</button>
-          <p>位势高度</p>
-        </div>
-        <div class="m-t">
-          <button class="el-button m-l-0 el-button--default is-circle">
-						<span class="custom-icon wind"></span>
-					</button>
-          <p>洋面风压</p>
-        </div>
-        <div class="m-t">
-          <button class="el-button m-l-0 el-button--default is-circle">
-						<span class="custom-icon temp"></span>
-					</button>
-          <p>水温分布</p>
-        </div>
-        <div class="m-t">
-          <button class="el-button m-l-0 el-button--default is-circle">
-						<span class="custom-icon oil"></span>
-					</button>
-          <p>原油泄漏轨迹预测</p>
-        </div>
-        <div class="m-t">
-          <button class="el-button m-l-0 el-button--default is-circle">
-						<span class="custom-icon shoal"></span>
-					</button>
-          <p>智能鱼群预测</p>
+          <p>{{ icon.title }}</p>
         </div>
       </div>
     </div>
@@ -149,42 +95,96 @@ export default {
 				  title:'叶绿素',
           type:'chla',
 					url: '/static/icon1.png',
+					layer: 'tile',
           isShow: false,
 				},
 				{
           title:'大气数据',
           type:'gfs',
 					url: '/static/icon2.png',
+					layer: 'wind',
           isShow: false,
 				},
 				{
 				  title:'表温',
           type:'sst',
 					url: '/static/icon3.png',
+					layer: 'tile',
           isShow: false,
 				},
 				{
 				  title:'表温距平值',
           type:'ssta',
-					url: '/static/icon4.png'
+					url: '/static/icon4.png',
+					layer: 'tile',
+					isShow: false
 				},
 				{
           title:'海平面高度',
           type:'ssh',
 					url: '/static/icon5.png',
+					layer: 'tile',
           isShow: false,
 				},
 				{
           title:'海平面距平值',
           type:'ssha',
 					url: '/static/icon6.png',
+					layer: 'tile',
           isShow: false,
 				},
 				{
           title:'盐度',
           type:'sf',
 					url: '/static/icon7.png',
+					layer: 'tile',
           isShow: false,
+				}
+			],
+			iconsRight: [
+				{
+					title: '冰层覆盖率',
+					type: 'ice',
+					url: 'ice',
+					isShow: false
+				},
+				{
+					title: '海底矿物分布',
+					type: 'mine',
+					url: 'mine',
+					isShow: false
+				},
+				{
+					title: '位势高度',
+					type: 'height',
+					url: 'height',
+					isShow: false
+				},
+				{
+					title: '洋面风压',
+					type: 'wind',
+					url: 'wind',
+					isShow: false
+				},
+				{
+					title: '水温分布',
+					type: 'temp',
+					url: 'temp',
+					isShow: false
+				},
+				{
+					title: '原油泄漏轨迹预测',
+					type: 'oil',
+					url: 'oil',
+					layer: 'geojson',
+					isShow: false
+				},
+				{
+					title: '智能鱼群预测',
+					type: 'fish',
+					url: 'shoal',
+					layer: 'geojson',
+					isShow: false
 				}
 			]
 		}
@@ -225,11 +225,7 @@ export default {
 		// 	// }
 		// })
 
-		let layer = this.createTileLayer({
-			url: 'http://116.62.237.253:8080/geo/wind/wms?service=WMS&version=1.1.0&request=GetMap&layers=wind:windField&styles=yangliu&bbox=-180.25,-90.25000762939453,179.75,90.24999237060547&width=768&height=385&srs=EPSG:4326&format=application/openlayers'
-		})
-		layer.setZIndex(unReactiveData.JSONLayerZIndex++)
-		unReactiveData.map.addLayer(layer)
+		
 	},
 	methods: {
 	  //查看更多
@@ -246,6 +242,16 @@ export default {
 		timeChange (time) {
 			console.log(time)
 		},
+
+		// 风layer
+		genWindLayer () {
+			let layer = this.createTileLayer({
+				url: 'http://116.62.237.253:8080/geo/wind/wms?service=WMS&version=1.1.0&request=GetMap&layers=wind:windField&styles=yangliu&bbox=-180.25,-90.25000762939453,179.75,90.24999237060547&width=768&height=385&srs=EPSG:4326&format=application/openlayers'
+			})
+			layer.setZIndex(unReactiveData.JSONLayerZIndex++)
+			unReactiveData.map.addLayer(layer)
+		},
+
 		handleLayer (type, index) {
 			if (unReactiveData[type + 'Layer']) {
 				// 如果图层已经存在,则移除
@@ -299,6 +305,24 @@ export default {
 			})
 		},
 		createJSONLayer (data) {
+			return this
+				.$http
+				.get(data.url, {
+					baseURL: undefined
+				})
+				.then(body => {
+					console.log(body)
+					return Promise.resolve(
+						new WindLayer(body, {
+							projection: 'EPSG:3857',
+							ratio: 1,
+							zIndex: unReactiveData.JSONLayerZIndex++
+						})
+					)
+				})
+		},
+		// 生成大气数据
+		createGFSLayer (data) {
 			return this
 				.$http
 				.get(data.url, {

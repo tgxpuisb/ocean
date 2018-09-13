@@ -1,26 +1,10 @@
 <template>
-  <div>
-    <div class="btn-control">
-      <el-form ref="form" :model="form" label-width="80px" inline>
-        <el-form-item label="经纬度" class="m-b-0">
-            <el-switch v-model="form.address"></el-switch>
-          </el-form-item>
-        <el-form-item label="卫星地图" class="m-b-0">
-          <el-switch v-model="form.satelliteMap"></el-switch>
-        </el-form-item>
-        <el-form-item label="测距" class="m-b-0">
-          <el-switch v-model="form.ranging"></el-switch>
-        </el-form-item>
-        <el-form-item label="取点" class="m-b-0">
-          <el-switch v-model="form.point"></el-switch>
-        </el-form-item>
-      </el-form>
-    </div>
-
     <div class="map-container">
       <div id="map" class="map"></div>
+      <div class="goback">
+        <el-button size="small" icon="el-icon-close"></el-button>
+      </div>
     </div>
-  </div>
 </template>
 
 <script>
@@ -92,8 +76,8 @@ export default {
         target: 'map',
         view: new View({
           center: [0, 0],
-          zoom: 2.8,
-          minZoom: 2.8
+          zoom: 3,
+          minZoom: 2.9
         })
       })
       var graticule = new Graticule({
@@ -173,5 +157,10 @@ export default {
 	.map {
 		width: 100%;
 		height:100%;
+	}
+	.goback{
+	  position:absolute;
+	  right:.5em;
+	  top:.5em;
 	}
 </style>

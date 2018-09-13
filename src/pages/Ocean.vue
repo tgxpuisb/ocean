@@ -223,6 +223,10 @@ export default {
 		})
 		unReactiveData.map.on('movestart', (data) => {
 		})
+
+		unReactiveData.map.getView().on('change:resolution', () => {
+			this.resetGrid()
+		})
 		
 		// axios.get('/json/oil/data-2018-8-1.json').then(res => {
 		// 	// if (res.data) {
@@ -263,11 +267,18 @@ export default {
 				})
 				unReactiveData.graticule.setMap(unReactiveData.map)
 			}
-			// var graticule = new Graticule({
-			// 	// the style to use for the lines, optional.
-			// 	map: unReactiveData.map
-			// 	// showLabels: true
-			// })
+		},
+		
+		resetGrid () {
+			if (this.hasGraticule) {
+				if (unReactiveData.graticule) {
+					unReactiveData.graticule.setMap(null)
+				}
+				unReactiveData.graticule = new Graticule({
+					showLabels: true
+				})
+				unReactiveData.graticule.setMap(unReactiveData.map)
+			}
 		},
 
 		// 风layer

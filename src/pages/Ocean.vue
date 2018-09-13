@@ -1,11 +1,37 @@
 <template>
     <div class="map-container">
       <div id="map" class="map"></div>
+      <div class="switch-box">
+        <div class="trafficopt">
+            <span class="last traffic"></span>路况
+        </div>
+      </div>
       <TimeBar :time="time" class="time-bar" @on-time-change="timeChange"/>
       <div class="platform">
         <ul>
-          <li v-for="(icon, index) in icons" :key="index">
+          <!--<li v-for="(icon, index) in icons" :key="index">
             <img :src="icon.url" :title="icon.title" @click="handleLayer(icon.type, index)" :class="{ active: icon.isShow }">
+          </li>-->
+          <li>
+            <el-button type="primary" icon="el-icon-edit" circle></el-button>
+          </li>
+          <li>
+            <el-button type="primary" icon="el-icon-edit" circle></el-button>
+          </li>
+          <li>
+            <el-button type="primary" icon="el-icon-edit" circle></el-button>
+          </li>
+          <li>
+            <el-button type="primary" icon="el-icon-edit" circle></el-button>
+          </li>
+          <li>
+            <el-button type="primary" icon="el-icon-edit" circle></el-button>
+          </li>
+          <li>
+            <el-button type="primary" icon="el-icon-edit" circle></el-button>
+          </li>
+          <li>
+            <el-button type="primary" icon="el-icon-edit" circle></el-button>
           </li>
         </ul>
       </div>
@@ -91,42 +117,42 @@ export default {
 				{
 				  title:'叶绿素',
           type:'chla',
-					url: '/static/icon_1.png',
+					url: '/static/icon1.png',
           isShow: false,
 				},
 				{
           title:'大气数据',
           type:'gfs',
-					url: '/static/icon_2.png',
+					url: '/static/icon2.png',
           isShow: false,
 				},
 				{
 				  title:'表温',
           type:'sst',
-					url: '/static/icon_3.png',
+					url: '/static/icon3.png',
           isShow: false,
 				},
 				{
 				  title:'表温距平值',
           type:'ssta',
-					url: '/static/icon_4.png'
+					url: '/static/icon4.png'
 				},
 				{
           title:'海平面高度',
           type:'ssh',
-					url: '/static/icon_5.png',
+					url: '/static/icon5.png',
           isShow: false,
 				},
 				{
           title:'海平面距平值',
           type:'ssha',
-					url: '/static/icon_6.png',
+					url: '/static/icon6.png',
           isShow: false,
 				},
 				{
           title:'盐度',
           type:'sf',
-					url: '/static/icon_7.png',
+					url: '/static/icon7.png',
           isShow: false,
 				}
 			]
@@ -272,11 +298,57 @@ export default {
 	}
 	.time-bar {
 		position: absolute;
-		bottom: 0;
+		bottom: 48px;
 		left: 50%;
 		transform: translateX(-50%);
 	}
+	.switch-box{
+	  position: absolute;
+	  left:0.5em;
+	  top:0.5em;
+	  z-index:4;
+	  height: 34px;
+    background: #fff;
+    padding: 0 10px;
+    border-radius: 0 2px 2px 0;
+    box-shadow: 1px 2px 1px rgba(0,0,0,.15);
+    .trafficopt {
+      padding-right: 12px;
+      line-height: 34px;
+      float: left;
+      font-size:12px;
+      display: inline-block;
+      cursor: pointer;
+    }
+    .traffic {
+        float: left;
+        font-size: 12px;
+        font-style: normal;
+        height: 34px;
+        line-height: 34px;
+        display: inline-block;
+    }
+	}
 	.platform {
+    position: absolute;
+    bottom:0px;
+    left:50%;
+    transform: translateX(-50%);
+    background-color: rgba(0, 0, 0, 0.3);
+    width:80%;
+    padding:10px 0;
+    border-radius:8px;
+    > ul {
+      width: 100%;
+      display: flex;
+      justify-content: space-around;
+    }
+    li {
+      width: 40px;
+      height: 40px;
+    }
+	}
+	/*.platform {
 		position: absolute;
 		bottom: 48px;
 		left: 50%;
@@ -309,5 +381,5 @@ export default {
 		img:hover {
 			transform: scale(1.3);
 		}
-	}
+	}*/
 </style>

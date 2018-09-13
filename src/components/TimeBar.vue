@@ -53,7 +53,7 @@ export default {
     padding: 10px 5px;
     width: 80%;
     text-align: center;
-    background-color: rgba(0, 0, 0, 0.3);
+    //background-color: rgba(0, 0, 0, 0.3);
   }
   .current-time {
     padding: 0 10px;

@@ -112,7 +112,7 @@ export default {
     position: relative;
   }
   .ol-overlaycontainer-stopevent{
-    display:none;
+    // display:none;
   }
   .btn-control{
     background-color:#e6effb;

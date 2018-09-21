@@ -2,11 +2,15 @@
     <div class="map-container">
       <div id="map" class="map"></div>
       <div class="switch-box">
-        <div class="trafficopt">
+        <div class="trafficopt" @click="startMasure('LineString')">
             <img src="/static/box1.png" style="vertical-align: text-bottom;"/>
-            <span>测距</span>
+            <span>距离测量</span>
         </div>
-        <div class="trafficopt">
+				<div class="trafficopt" @click="startMasure('Polygon')">
+            <img src="/static/box1.png" style="vertical-align: text-bottom;"/>
+            <span>面积测量</span>
+        </div>
+        <div class="trafficopt" @click="showBingMaps">
             <img src="/static/box4.png" style="vertical-align: text-bottom;" />
             <span>卫星地图</span>
         </div>
@@ -68,10 +72,24 @@ const View = ol.View
 const ImageLayer = ol.layer.Image
 const ImageWMS = ol.source.ImageWMS
 const Graticule = ol.Graticule
+const Draw = ol.interaction.Draw
+const VectorSource = ol.source.Vector
+const VectorLayer = ol.layer.Vector
+const LineString = ol.geom.LineString
+const Polygon = ol.geom.Polygon
+const Overlay = ol.Overlay
+const getArea = ol.sphere.getArea
+const getLength = ol.sphere.getLength
+const unByKey = ol.Observable.unByKey
+const CircleStyle = ol.style.Circle
+const Fill = ol.style.Fill
+const Stroke = ol.style.Stroke
+const Style = ol.style.Style
 
 import TimeBar from '@/components/TimeBar'
 
 // 哪些不被数据监听的数据
+const masureSource = new VectorSource()
 const unReactiveData = {
 	map: null,
 	chalLayer: null,
@@ -82,8 +100,64 @@ const unReactiveData = {
 	sshaLayer: null,
 	sfLayer: null,
 	JSONLayerZIndex: 1000,
-	graticule: null
+	tileLayerZindex: 10,
+	graticule: null,
+	bingLayers: null,
+	masure: {
+		source: masureSource,
+		vector: new VectorLayer({
+			source: masureSource,
+			zIndex: 9999,
+			style: new Style({
+				fill: new Fill({
+					color: 'rgba(255, 255, 255, 0.2)'
+				}),
+				stroke: new Stroke({
+					color: '#ffcc33',
+					width: 2
+				}),
+				image: new CircleStyle({
+					radius: 7,
+					fill: new Fill({
+						color: '#ffcc33'
+					})
+				})
+			})
+		}),
+		sketch: undefined,
+		helpTooltipElement: undefined,
+		helpTooltip: undefined,
+		measureTooltipElement: undefined,
+		measureTooltip: undefined,
+		continuePolygonMsg: '点击继续绘制形状, 双击结束绘制',
+		continueLineMsg: '点击继续绘制线段, 双击结束绘制',
+		pointerMoveHandler: null,
+		draw: null, // 绘制的draw
+	}, //测量对象 
 }
+window.unReactiveData = unReactiveData
+
+ol.source.AMap = function(options){
+	var options = options ? options : {};
+	var url;
+	if(options.mapType == "sat"){
+			url ="http://webst0{1-4}.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}";
+	}else{
+			url = "http://webrd0{1-4}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=7&x={x}&y={y}&z={z}";
+	}
+
+	ol.source.XYZ.call(this, {
+		crossOrigin: 'anonymous',   //跨域
+		cacheSize: options.cacheSize,
+		projection: ol.proj.get('EPSG:3857'),
+		// urls:urls,
+		url:url,
+		wrapX: options.wrapX !== undefined ? options.wrapX : true
+	});
+
+}
+
+ol.inherits(ol.source.AMap,ol.source.XYZ);
 
 const Layers = {
 
@@ -210,7 +284,8 @@ export default {
 					source: new OSM({
 						wrapX: false
 					})
-				})
+				}),
+				unReactiveData.masure.vector // todo测量的图层
 			],
 			target: 'map',
 			view: new View({
@@ -223,22 +298,6 @@ export default {
 		})
 		unReactiveData.map.on('movestart', (data) => {
 		})
-
-		// unReactiveData.map.getView().on('change:resolution', () => {
-		// 	this.resetGrid()
-		// })
-		
-		// axios.get('/json/oil/data-2018-8-1.json').then(res => {
-		// 	// if (res.data) {
-		// 	// 	let wind = new WindLayer(res.data, {
-		// 	// 		projection: 'EPSG:3857',
-		// 	// 		ratio: 1
-		// 	// 	})
-		// 	// 	wind.appendTo(unReactiveData.map)
-		// 	// }
-		// })
-
-
 	},
 	methods: {
 	  //查看更多
@@ -268,18 +327,23 @@ export default {
 				unReactiveData.graticule.setMap(unReactiveData.map)
 			}
 		},
-		
-		// resetGrid () {
-		// 	if (this.hasGraticule) {
-		// 		if (unReactiveData.graticule) {
-		// 			unReactiveData.graticule.setMap(null)
-		// 		}
-		// 		unReactiveData.graticule = new Graticule({
-		// 			showLabels: true
-		// 		})
-		// 		unReactiveData.graticule.setMap(unReactiveData.map)
-		// 	}
-		// },
+
+		showBingMaps () {
+			if (unReactiveData.bingLayers) {
+				unReactiveData.map.removeLayer(unReactiveData.bingLayers)
+				unReactiveData.bingLayers = null
+			} else {
+				unReactiveData.bingLayers = new Tile({
+					title: '高德卫星地图',
+					zIndex: 2,
+					source: new ol.source.AMap({
+						mapType: 'sat',
+						wrapX: false
+					}),
+				})
+				unReactiveData.map.addLayer(unReactiveData.bingLayers)
+			}
+		},
 
 		// 风layer
 		genWindLayer () {
@@ -339,7 +403,8 @@ export default {
 					},
 					serverType: 'geoserver',
 					wrapX: false
-				})
+				}),
+				zIndex: unReactiveData.tileLayerZindex++
 			})
 		},
 		createJSONLayer (data) {
@@ -376,6 +441,143 @@ export default {
 						})
 					)
 				})
+		},
+		// masure
+		/**
+		 * 开始masure的时候先设置type addInteraction 一个draw, 结束绘制之后 removeInteraction
+		 */
+		startMasure (type) {
+			console.log(type)
+			unReactiveData.masure.draw = new Draw({
+				source: unReactiveData.masure.source,
+				type,
+				style: new Style({
+					fill: new Fill({
+						color: 'rgba(255, 255, 255, 0.2)'
+					}),
+					stroke: new Stroke({
+						color: 'rgba(0, 0, 0, 0.5)',
+						lineDash: [10, 10],
+						width: 2
+					}),
+					image: new CircleStyle({
+						radius: 5,
+						stroke: new Stroke({
+							color: 'rgba(0, 0, 0, 0.7)'
+						}),
+						fill: new Fill({
+							color: 'rgba(255, 255, 255, 0.2)'
+						})
+					})
+				})
+			})
+			unReactiveData.map.addInteraction(unReactiveData.masure.draw)
+
+			this.createMeasureTooltip()
+			this.createHelpTooltip()
+
+			let listener
+			unReactiveData.masure.draw.on('drawstart', evt => {
+				unReactiveData.masure.sketch = evt.feature
+				let tooltipCoord = evt.coordinate
+				listener = unReactiveData.masure.sketch.getGeometry().on('change', evt => {
+					let geom = evt.target
+					let output
+					if (geom instanceof Polygon) {
+						output = this.formatArea(geom)
+						tooltipCoord = geom.getInteriorPoint().getCoordinates()
+					} else if (geom instanceof LineString) {
+						output = this.formatLength(geom)
+						tooltipCoord = geom.getLastCoordinate()
+					}
+					console.log(tooltipCoord)
+					unReactiveData.masure.measureTooltipElement.innerHTML = output
+					unReactiveData.masure.measureTooltip.setPosition(tooltipCoord)
+				})
+			})
+			unReactiveData.masure.draw.on('drawend', () => {
+				unReactiveData.masure.measureTooltipElement.className = 'tooltip tooltip-static'
+				unReactiveData.masure.measureTooltip.setOffset([0, -7])
+				unReactiveData.masure.sketch = null
+				unReactiveData.masure.measureTooltipElement = null
+				this.createMeasureTooltip()
+				unByKey(listener)
+			})
+			this.initMapDrawEvent()
+		},
+		initMapDrawEvent () {
+			unReactiveData.map.on('pointermove', evt => {
+				if (evt.dragging) {
+					return
+				}
+				let helpMsg = 'Click to start drawing'
+
+				if (unReactiveData.masure.sketch) {
+					let geom = unReactiveData.masure.sketch.getGeometry()
+
+					unReactiveData.masure.helpTooltipElement.innerHTML = helpMsg
+					unReactiveData.masure.helpTooltip.setPosition(evt.coordinate)
+					unReactiveData.masure.helpTooltipElement.classList.remove('hidden')
+				}
+			})
+		},
+		endMasure () {
+			if (unReactiveData.masureDraw) {
+				unReactiveData.map.removeInteraction(unReactiveData.masure.draw)
+				unReactiveData.masure.draw = null
+			}
+		},
+		createMeasureTooltip () {
+			if (unReactiveData.masure.measureTooltipElement) {
+				unReactiveData.masure.measureTooltipElement.parentNode.removeChild(unReactiveData.masure.measureTooltipElement)
+				// unReactiveData.masure.measureTooltipElement = undefined
+			}
+			unReactiveData.masure.measureTooltipElement = document.createElement('div')
+			unReactiveData.masure.measureTooltipElement.className = 'tooltip tooltip-measure'
+			unReactiveData.masure.measureTooltip = new Overlay({
+				element: unReactiveData.masure.measureTooltipElement,
+				offset: [0, -15],
+        positioning: 'bottom-center'
+			})
+			unReactiveData.map.addOverlay(unReactiveData.masure.measureTooltip)
+		},
+		createHelpTooltip () {
+			if (unReactiveData.masure.helpTooltipElement) {
+				unReactiveData.masure.helpTooltipElement.parentNode.removeChild(unReactiveData.masure.helpTooltipElement);
+				// unReactiveData.masure.helpTooltipElement = undefined
+			}
+			unReactiveData.masure.helpTooltipElement = document.createElement('div')
+			unReactiveData.masure.helpTooltipElement.className = 'tooltip tooltip-measure'
+			unReactiveData.masure.helpTooltip = new Overlay({
+				element: unReactiveData.masure.helpTooltipElement,
+				offset: [0, -15],
+        positioning: 'bottom-center'
+			})
+			// unReactiveData.map.addOverlay(unReactiveData.masure.helpTooltip)
+		},
+		formatLength (line) {
+			var length = getLength(line)
+			var output
+			if (length > 100) {
+				output = (Math.round(length / 1000 * 100) / 100) +
+						' ' + 'km'
+			} else {
+				output = (Math.round(length * 100) / 100) +
+						' ' + 'm'
+			}
+			return output
+		},
+		formatArea (polygon) {
+			var area = getArea(polygon)
+			var output
+			if (area > 10000) {
+				output = (Math.round(area / 1000000 * 100) / 100) +
+						' ' + 'km<sup>2</sup>'
+			} else {
+				output = (Math.round(area * 100) / 100) +
+						' ' + 'm<sup>2</sup>'
+			}
+			return output
 		}
 	},
   components: {
@@ -495,5 +697,37 @@ export default {
     &.chla {
       background-image: url("/static/icon6.png");
     }
+	}
+	.tooltip {
+		position: relative;
+		background: rgba(0, 0, 0, 0.5);
+		border-radius: 4px;
+		color: white;
+		padding: 4px 8px;
+		opacity: 0.7;
+		white-space: nowrap;
+	}
+	.tooltip-measure {
+		opacity: 1;
+		font-weight: bold;
+	}
+	.tooltip-static {
+		background-color: #ffcc33;
+		color: black;
+		border: 1px solid white;
+	}
+	.tooltip-measure:before,
+	.tooltip-static:before {
+		border-top: 6px solid rgba(0, 0, 0, 0.5);
+		border-right: 6px solid transparent;
+		border-left: 6px solid transparent;
+		content: "";
+		position: absolute;
+		bottom: -6px;
+		margin-left: -7px;
+		left: 50%;
+	}
+	.tooltip-static:before {
+		border-top-color: #ffcc33;
 	}
 </style>
